@@ -1,0 +1,337 @@
+﻿<div class="pipeline-shell">
+
+  <!-- ── Header ── -->
+  <div class="pipeline-header">
+    <nav class="mod-breadcrumb">
+      <svg class="bc-home" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 6.5L8 2l6 4.5V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M6 15V9h4v6" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      <span class="bc-sep">›</span>
+      <span class="bc-link">Recruitment</span>
+      <span class="bc-sep">›</span>
+      <span class="bc-curr">Candidate Pipeline</span>
+    </nav>
+    <h1 class="pipeline-title">Candidate Pipeline</h1>
+  </div>
+
+  <!-- ── Action Bar (all right-aligned) ── -->
+  <div class="pipeline-action-bar">
+    <div class="job-select-wrap">
+      <select class="job-select" [(ngModel)]="selectedJob">
+        <option *ngFor="let j of jobOptions; trackBy: trackByIndex" [value]="j">{{ j }}</option>
+      </select>
+      <svg class="job-caret" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="pa-sep"></div>
+    <button class="pl-btn">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Filter
+    </button>
+    <button class="pl-btn">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 5.5v5M5.5 8h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Pipeline Settings
+    </button>
+    <button class="pl-btn">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 13V5M5 8l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Import
+    </button>
+    <button class="pl-btn primary" (click)="openAddModal()">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Add Candidate
+    </button>
+  </div>
+
+  <!-- ── Stage Summary Bar ── -->
+  <div class="stage-summary-bar">
+    <div class="ss-chip">
+      <span class="ss-label">Total Candidates</span>
+      <span class="ss-count">{{ totalCandidates }}</span>
+    </div>
+    <div class="ss-divider"></div>
+    <div class="ss-chip" *ngFor="let s of stages; trackBy: trackByIndex">
+      <span class="ss-dot" [style.background]="s.color"></span>
+      <span class="ss-label">{{ s.name }}</span>
+      <span class="ss-count" [style.color]="s.color">{{ s.count }}</span>
+      <button class="ss-menu">⋮</button>
+    </div>
+  </div>
+
+  <!-- ── Main body: kanban + detail panel ── -->
+  <div class="pipeline-body" [class.has-detail]="selectedCandidate">
+
+    <!-- Kanban board -->
+    <div class="kanban-board">
+      <div class="kanban-col"
+           *ngFor="let stage of stages; trackBy: trackByIndex"
+           [class.drag-over]="dragOverKey === stage.key"
+           (dragover)="onDragOver($event, stage.key)"
+           (dragleave)="onDragLeave($event)"
+           (drop)="onDrop($event, stage)">
+
+        <div class="kanban-col-head">
+          <div class="kcol-left">
+            <span class="kcol-dot" [style.background]="stage.color"></span>
+            <span class="kcol-name">{{ stage.name }}</span>
+            <span class="kcol-count" [style.background]="stage.color + '20'" [style.color]="stage.color">{{ stage.count }}</span>
+          </div>
+          <button class="kcol-menu">⋮</button>
+        </div>
+
+        <div class="kanban-cards">
+          <div class="kanban-card"
+               *ngFor="let c of stage.candidates; trackBy: trackByIndex"
+               draggable="true"
+               [class.selected]="selectedCandidate?.id === c.id"
+               [class.dragging]="draggedId === c.id"
+               (click)="selectCandidate(c)"
+               (dragstart)="onDragStart($event, c.id, stage.key)"
+               (dragend)="onDragEnd()">
+            <div class="kcard-top">
+              <div class="kcard-avatar" [style.background]="stage.color + '22'" [style.color]="stage.color">{{ c.initials }}</div>
+              <div class="kcard-info">
+                <div class="kcard-name">{{ c.name }}</div>
+                <div class="kcard-role">{{ c.role }}</div>
+              </div>
+              <button class="kcard-menu" (click)="$event.stopPropagation()">⋮</button>
+            </div>
+            <div class="kcard-meta">
+              <span>{{ c.experience }}</span>
+              <span class="kcard-sep">·</span>
+              <span>{{ c.source }}</span>
+            </div>
+            <div class="kcard-badge" *ngIf="c.statusBadge"
+                 [style.color]="c.statusColor"
+                 [style.border-color]="c.statusColor + '55'"
+                 [style.background]="c.statusColor + '12'">{{ c.statusBadge }}</div>
+            <div class="kcard-date" *ngIf="c.interviewDate || c.date">
+              <svg viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 1v2M10 1v2M1 5h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              {{ c.interviewDate || c.date }}
+            </div>
+          </div>
+
+          <!-- Drop placeholder shown when dragging over an empty/target column -->
+          <div class="drop-placeholder" *ngIf="dragOverKey === stage.key && dragSourceKey !== stage.key">
+            Drop here to move to <strong>{{ stage.name }}</strong>
+          </div>
+
+          <button class="add-cand-btn" (click)="openAddModal()">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Add Candidate
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Candidate detail panel ── -->
+    <div class="detail-panel" *ngIf="selectedCandidate">
+      <div class="dp-head">
+        <span class="dp-head-title">Candidate Details</span>
+        <button class="dp-close" (click)="closeDetail()">✕</button>
+      </div>
+
+      <div class="dp-identity">
+        <div class="dp-avatar">{{ selectedCandidate.initials }}</div>
+        <div class="dp-id-info">
+          <div class="dp-name">{{ selectedCandidate.name }}</div>
+          <div class="dp-role">{{ selectedCandidate.role }}</div>
+          <div class="dp-exp">{{ selectedCandidate.experience }} Experience &nbsp;•&nbsp; Bangalore, India</div>
+        </div>
+      </div>
+
+      <div class="dp-contact">
+        <span class="dp-contact-item">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M2 4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.2"/><path d="M2 4l6 5 6-5" stroke="currentColor" stroke-width="1.2"/></svg>
+          aditi.sharma@email.com
+        </span>
+        <span class="dp-contact-item">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M5 2h2l1 3-1.5 1.5a9 9 0 0 0 3 3L11 8l3 1v2a1 1 0 0 1-1 1C6 12 4 4 3 3a1 1 0 0 1 2-1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          +91 98765 43210
+        </span>
+      </div>
+
+      <div class="dp-stage-row">
+        <span class="dp-stage-chip">{{ currentStageOf(selectedCandidate) }}</span>
+        <button class="dp-move-btn">Move to Stage
+          <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="dp-tabs">
+        <button class="dp-tab" [class.active]="activeTab === 'overview'"  (click)="activeTab = 'overview'">Overview</button>
+        <button class="dp-tab" [class.active]="activeTab === 'timeline'"  (click)="activeTab = 'timeline'">Timeline</button>
+        <button class="dp-tab" [class.active]="activeTab === 'resume'"    (click)="activeTab = 'resume'">Resume</button>
+        <button class="dp-tab" [class.active]="activeTab === 'notes'"     (click)="activeTab = 'notes'">Notes</button>
+        <button class="dp-tab" [class.active]="activeTab === 'documents'" (click)="activeTab = 'documents'">Documents</button>
+      </div>
+
+      <div class="dp-tab-body" *ngIf="activeTab === 'overview'">
+        <div class="dp-section">
+          <div class="dp-section-title">Candidate Information</div>
+          <div class="dp-info-grid">
+            <div class="dp-info-item"><span>Source</span><strong>{{ selectedCandidate.source }}</strong></div>
+            <div class="dp-info-item"><span>Applied On</span><strong>08 May 2024</strong></div>
+            <div class="dp-info-item"><span>Current Company</span><strong>Tech Solutions</strong></div>
+            <div class="dp-info-item"><span>Current CTC</span><strong>8.5 LPA</strong></div>
+            <div class="dp-info-item"><span>Expected CTC</span><strong>12.0 LPA</strong></div>
+            <div class="dp-info-item"><span>Notice Period</span><strong>30 Days</strong></div>
+          </div>
+        </div>
+        <div class="dp-section">
+          <div class="dp-section-title">Interview Summary</div>
+          <div class="dp-info-grid">
+            <div class="dp-info-item"><span>Interview Date</span><strong>10 May 2024</strong></div>
+            <div class="dp-info-item"><span>Interviewers</span><strong>2</strong></div>
+            <div class="dp-info-item">
+              <span>Overall Feedback</span>
+              <strong class="dp-stars">★★★★½ <span>4.5/5</span></strong>
+            </div>
+            <div class="dp-info-item">
+              <span>Recommendation</span>
+              <strong><span class="dp-rec-badge">Strong Hire</span></strong>
+            </div>
+          </div>
+        </div>
+        <div class="dp-section">
+          <div class="dp-section-title">Next Action</div>
+          <div class="dp-next-action">
+            <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/></svg>
+            Move to Documentation stage
+          </div>
+          <a class="dp-reminder-link">+ Add Reminder</a>
+        </div>
+      </div>
+
+      <div class="dp-tab-body dp-tab-empty" *ngIf="activeTab !== 'overview'">
+        <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" fill="#f1f5f9"/><path d="M16 24h16M24 16v16" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <p>No {{ activeTab }} content yet</p>
+      </div>
+
+      <div class="dp-footer">
+        <button class="dp-footer-btn">Add Note</button>
+        <button class="dp-footer-btn primary" (click)="viewFullProfile()">View Full Profile</button>
+      </div>
+    </div>
+
+  </div><!-- /pipeline-body -->
+
+
+  <!-- ── Add Candidate Modal ── -->
+  <div class="cp-modal-overlay" *ngIf="showAddModal" (click)="closeAddModal()">
+    <div class="cp-modal" (click)="$event.stopPropagation()">
+
+      <div class="cp-modal-head">
+        <div>
+          <h3 class="cp-modal-title">Add Candidate</h3>
+          <p class="cp-modal-sub">Upload a resume or fill in details manually</p>
+        </div>
+        <button class="cp-modal-close" (click)="closeAddModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Mode toggle -->
+      <div class="cp-mode-tabs">
+        <button class="cp-mtab" [class.active]="addMode === 'upload'" (click)="addMode = 'upload'">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13V5M7 8l3-3 3 3"/><path d="M4 14v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1"/></svg>
+          Upload Resume
+        </button>
+        <button class="cp-mtab" [class.active]="addMode === 'manual'" (click)="addMode = 'manual'">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.5 3.5a2 2 0 0 1 2 2L7 15l-4 1 1-4L14.5 3.5z"/></svg>
+          Add Manually
+        </button>
+      </div>
+
+      <div class="cp-modal-body">
+
+        <!-- Upload Resume Mode -->
+        <div *ngIf="addMode === 'upload'">
+          <label class="cp-drop-zone" [class.has-file]="uploadFileName">
+            <input type="file" accept=".pdf,.doc,.docx" (change)="onResumeChange($event)" style="display:none"/>
+            <div *ngIf="!uploadFileName" class="cp-drop-inner">
+              <div class="cp-drop-icon">
+                <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" fill="#eff6ff"/><path d="M24 32V20M20 24l4-4 4 4" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 34h16" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <div class="cp-drop-text">Drag & drop resume here</div>
+              <div class="cp-drop-or">or</div>
+              <span class="cp-browse-btn">Browse File</span>
+              <div class="cp-drop-hint">Supports PDF, DOC, DOCX · Max 5 MB</div>
+            </div>
+            <div *ngIf="uploadFileName" class="cp-file-selected">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 11 17 15 13"/></svg>
+              <div>
+                <div class="cp-file-name">{{ uploadFileName }}</div>
+                <div class="cp-file-ready">Ready to upload</div>
+              </div>
+              <button class="cp-file-remove" (click)="uploadFileName = ''; $event.preventDefault()">✕</button>
+            </div>
+          </label>
+
+          <div class="cp-upload-note">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><line x1="8" y1="6" x2="8" y2="8.5"/><circle cx="8" cy="11" r=".5" fill="currentColor"/></svg>
+            Candidate details will be auto-detected from the resume and added to <strong>In Bucket</strong> stage.
+          </div>
+        </div>
+
+        <!-- Manual Mode -->
+        <div *ngIf="addMode === 'manual'" class="cp-manual-form">
+          <div class="cp-form-row">
+            <div class="cp-field">
+              <label>Full Name <span class="req">*</span></label>
+              <input class="cp-input" type="text" placeholder="e.g. Rahul Mehta" [(ngModel)]="addForm.name"/>
+            </div>
+            <div class="cp-field">
+              <label>Email Address</label>
+              <input class="cp-input" type="email" placeholder="e.g. rahul@email.com" [(ngModel)]="addForm.email"/>
+            </div>
+          </div>
+          <div class="cp-form-row">
+            <div class="cp-field">
+              <label>Phone Number</label>
+              <input class="cp-input" type="tel" placeholder="+91 98765 43210" [(ngModel)]="addForm.phone"/>
+            </div>
+            <div class="cp-field">
+              <label>Role / Position</label>
+              <input class="cp-input" type="text" placeholder="e.g. Software Engineer" [(ngModel)]="addForm.role"/>
+            </div>
+          </div>
+          <div class="cp-form-row">
+            <div class="cp-field">
+              <label>Experience (Years)</label>
+              <input class="cp-input" type="number" placeholder="e.g. 3.5" [(ngModel)]="addForm.experience" step="0.5" min="0"/>
+            </div>
+            <div class="cp-field">
+              <label>Source</label>
+              <select class="cp-input" [(ngModel)]="addForm.source">
+                <option value="">Select source</option>
+                <option *ngFor="let s of sourcesOptions; trackBy: trackByIndex" [value]="s">{{ s }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="cp-form-row">
+            <div class="cp-field">
+              <label>Location</label>
+              <input class="cp-input" type="text" placeholder="e.g. Bangalore" [(ngModel)]="addForm.location"/>
+            </div>
+            <div class="cp-field">
+              <label>Add to Stage</label>
+              <select class="cp-input" [(ngModel)]="addForm.stage">
+                <option *ngFor="let s of stages; trackBy: trackByIndex" [value]="s.key">{{ s.name }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /cp-modal-body -->
+
+      <div class="cp-modal-foot">
+        <button class="pl-btn" (click)="closeAddModal()">Cancel</button>
+        <button class="pl-btn primary" (click)="addCandidate()"
+                [disabled]="(addMode === 'manual' && !addForm.name.trim()) || (addMode === 'upload' && !uploadFileName)">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Add Candidate
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+

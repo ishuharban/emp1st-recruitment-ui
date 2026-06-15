@@ -1,0 +1,558 @@
+﻿<!-- ══════════════════════════════════════════
+     LISTING / APPROVAL SCREEN
+══════════════════════════════════════════ -->
+<div class="req-shell" *ngIf="!showForm">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <nav class="mod-breadcrumb">
+        <svg class="bc-home" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 6.5L8 2l6 4.5V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M6 15V9h4v6" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        <span class="bc-sep">›</span>
+        <span class="bc-link">Recruitment</span>
+        <span class="bc-sep">›</span>
+        <span class="bc-curr">{{ mode === 'approval' ? 'Requisition Approvals' : 'Requisition Management' }}</span>
+      </nav>
+      <h1 class="page-title">{{ mode === 'approval' ? 'Requisition Approvals' : 'Requisition Management' }}</h1>
+    </div>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="stat-container">
+    <div class="stat-card" style="--card-border-color: #3b82f6" [class.active]="activeTab === 'all'" (click)="activeTab = 'all'">
+      <svg class="stat-icon" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 7h14M7 3v4M13 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span class="stat-title">Total Requisitions</span>
+      <span class="stat-count">{{ totalCount }}</span>
+    </div>
+    <div class="stat-card" style="--card-border-color: #f59e0b" [class.active]="activeTab === 'pending'" (click)="activeTab = 'pending'">
+      <svg class="stat-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 6v4l2.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span class="stat-title">Pending Approval</span>
+      <span class="stat-count">{{ pendingCount }}</span>
+    </div>
+    <div class="stat-card" style="--card-border-color: #22c55e" [class.active]="activeTab === 'approved'" (click)="activeTab = 'approved'">
+      <svg class="stat-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><path d="M7 10l2.5 2.5 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="stat-title">Approved</span>
+      <span class="stat-count">{{ approvedCount }}</span>
+    </div>
+    <div class="stat-card" style="--card-border-color: #ef4444" [class.active]="activeTab === 'rejected'" (click)="activeTab = 'rejected'">
+      <svg class="stat-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span class="stat-title">Rejected</span>
+      <span class="stat-count">{{ rejectedCount }}</span>
+    </div>
+  </div>
+
+  <!-- Action Bar -->
+  <div class="action-bar action-bar--right">
+    <button class="raise-btn" (click)="openAdd()" *ngIf="mode === 'request'">
+      <svg viewBox="0 0 18 18" fill="none"><path d="M9 4v10M4 9h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      New Requisition
+    </button>
+    <div class="action-search">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M16 16l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="Search by ID, department, designation..." [(ngModel)]="searchTerm" />
+    </div>
+    <button class="export-btn">
+      <svg viewBox="0 0 18 18" fill="none"><path d="M9 3v9M5 8l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 14h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Export
+    </button>
+    <select class="action-select">
+      <option value="">All Priorities</option>
+      <option>High</option><option>Medium</option><option>Low</option>
+    </select>
+    <select class="action-select">
+      <option value="">All Departments</option>
+      <option>Engineering</option><option>Human Resources</option>
+      <option>Sales</option><option>Product</option><option>Analytics</option>
+    </select>
+  </div>
+
+  <!-- Table Card -->
+  <div class="table-card">
+
+    <!-- Table -->
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Req. ID</th>
+            <th>Job Title</th>
+            <th>Department</th>
+            <th>Designation</th>
+            <th>Positions</th>
+            <th>Priority</th>
+            <th>Requested By</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of filteredList; trackBy: trackById"
+              class="clickable-row"
+              (click)="mode === 'approval' ? openApprovalDetail(r) : openRequestDetail(r)">
+            <td><span class="req-id-cell">{{ r.id }}</span></td>
+            <td class="cell-bold">{{ r.jobTitle }}</td>
+            <td>{{ r.department }}</td>
+            <td>{{ r.designation }}</td>
+            <td class="cell-center">{{ r.vacancy }}</td>
+            <td><span class="status-badge" [ngClass]="priorityClass(r.priority)">{{ r.priority }}</span></td>
+            <td>{{ r.requestedBy }}</td>
+            <td class="cell-muted">{{ r.requestedOn }}</td>
+            <td><span class="status-badge" [ngClass]="statusClass(r.status)">{{ statusLabel(r.status) }}</span></td>
+          </tr>
+          <tr *ngIf="filteredList.length === 0">
+            <td colspan="10" class="empty-cell">
+              <svg viewBox="0 0 48 48" fill="none"><rect x="6" y="8" width="36" height="34" rx="3" stroke="#d1d5db" stroke-width="2"/><path d="M14 18h20M14 24h12M14 30h8" stroke="#d1d5db" stroke-width="2" stroke-linecap="round"/></svg>
+              <p>No requisitions found</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="table-pagination">
+      <span class="pag-info">Showing {{ filteredList.length }} of {{ totalCount }} records</span>
+      <div class="pag-buttons">
+        <button class="pag-btn" disabled>&#8249;</button>
+        <button class="pag-btn active">1</button>
+        <button class="pag-btn" disabled>&#8250;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     REQUISITION FORM
+══════════════════════════════════════════ -->
+<div class="req-shell" *ngIf="showForm">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <nav class="mod-breadcrumb">
+        <svg class="bc-home" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 6.5L8 2l6 4.5V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M6 15V9h4v6" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        <span class="bc-sep">›</span>
+        <span class="bc-link" (click)="closeForm()">Requisition Management</span>
+        <span class="bc-sep">›</span>
+        <span class="bc-curr">{{ isEditMode ? 'Edit Requisition' : 'New Requisition' }}</span>
+      </nav>
+      <h1 class="page-title">{{ isEditMode ? 'Edit Requisition' : 'New Requisition' }}</h1>
+    </div>
+  </div>
+
+  <!-- Workflow Progress Tracker (shown when viewing an existing requisition) -->
+  <div class="workflow-tracker" *ngIf="viewingRequisition">
+    <div class="wf-inner">
+      <ng-container *ngFor="let step of getWorkflowSteps(viewingRequisition!); let i = index; let last = last; trackBy: trackByIndex">
+        <div class="wf-step" [ngClass]="'wf-step--' + step.status">
+          <div class="wf-circle">
+            <ng-container *ngIf="step.status === 'completed'">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#22c55e"/><path d="M5.5 10l3 3 6-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </ng-container>
+            <ng-container *ngIf="step.status === 'active'">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#3b82f6"/><circle cx="10" cy="10" r="4" fill="#fff"/></svg>
+            </ng-container>
+            <ng-container *ngIf="step.status === 'rejected'">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#ef4444"/><path d="M7 7l6 6M13 7l-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            </ng-container>
+            <ng-container *ngIf="step.status === 'returned'">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#f59e0b"/><path d="M13 8H8m0 0l2-2M8 8l2 2M7 12h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </ng-container>
+            <ng-container *ngIf="step.status === 'pending'">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#d1d5db" stroke-width="2" fill="#fff"/><circle cx="10" cy="10" r="3" fill="#d1d5db"/></svg>
+            </ng-container>
+          </div>
+          <div class="wf-approver">
+            <span class="wf-user">{{ step.approver || 'Unassigned' }}</span>
+          </div>
+          <div class="wf-time" *ngIf="step.timestamp">{{ step.timestamp }}</div>
+          <div class="wf-time wf-pending" *ngIf="!step.timestamp">Pending</div>
+        </div>
+        <div class="wf-connector" *ngIf="!last" [ngClass]="{'wf-connector--done': step.status === 'completed'}"></div>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card" [class.form-readonly]="isViewOnly">
+
+    <!-- Section: Basic Information -->
+    <div class="form-section">
+      <div class="form-section-header">
+        <svg class="fs-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M6 7h6M6 10h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <h3>Basic Information</h3>
+      </div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label>Requisition ID</label>
+          <input type="text" class="f-input" [(ngModel)]="form.id" readonly />
+        </div>
+        <div class="field-group">
+          <label>Job Title <span class="req-star">*</span></label>
+          <input type="text" class="f-input" placeholder="e.g. Senior Software Engineer" [(ngModel)]="form.jobTitle" [disabled]="isViewOnly" />
+        </div>
+        <div class="field-group">
+          <label>Company <span class="req-star">*</span></label>
+          <input type="text" class="f-input" placeholder="Company name" [(ngModel)]="form.company" />
+        </div>
+        <div class="field-group">
+          <label>Department <span class="req-star">*</span></label>
+          <input type="text" class="f-input" placeholder="e.g. Engineering" [(ngModel)]="form.department" />
+        </div>
+        <div class="field-group">
+          <label>Business Unit</label>
+          <input type="text" class="f-input" placeholder="e.g. Product" [(ngModel)]="form.businessUnit" />
+        </div>
+        <div class="field-group">
+          <label>Designation <span class="req-star">*</span></label>
+          <input type="text" class="f-input" placeholder="Position title" [(ngModel)]="form.designation" />
+        </div>
+        <div class="field-group">
+          <label>Location <span class="req-star">*</span></label>
+          <input type="text" class="f-input" placeholder="Work location" [(ngModel)]="form.location" />
+        </div>
+        <div class="field-group">
+          <label>City</label>
+          <input type="text" class="f-input" placeholder="City" [(ngModel)]="form.city" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Position Details -->
+    <div class="form-section">
+      <div class="form-section-header">
+        <svg class="fs-icon" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M3 15c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <h3>Position Details</h3>
+      </div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label>Number of Vacancies <span class="req-star">*</span></label>
+          <input type="number" class="f-input" placeholder="e.g. 2" min="1" [(ngModel)]="form.vacancy" />
+        </div>
+        <div class="field-group">
+          <label>Employment Type <span class="req-star">*</span></label>
+          <select class="f-input" [(ngModel)]="form.employmentType">
+            <option value="" disabled>Select type</option>
+            <option *ngFor="let o of employmentTypeOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Employee Type <span class="req-star">*</span></label>
+          <select class="f-input" [(ngModel)]="form.employeeType">
+            <option value="" disabled>Select type</option>
+            <option *ngFor="let o of employeeTypeOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Budget (&#8377;) <span class="req-star">*</span></label>
+          <input type="number" class="f-input" placeholder="e.g. 800000" min="1" [(ngModel)]="form.budget" />
+        </div>
+        <div class="field-group">
+          <label>Hiring Manager <span class="req-star">*</span></label>
+          <select class="f-input" [(ngModel)]="form.hiringManager">
+            <option value="" disabled>Select manager</option>
+            <option *ngFor="let o of hiringManagerOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Expected Joining Date <span class="req-star">*</span></label>
+          <input type="date" class="f-input" [(ngModel)]="form.expectedJoiningDate" />
+        </div>
+        <div class="field-group">
+          <label>Replacement / New <span class="req-star">*</span></label>
+          <select class="f-input" [(ngModel)]="form.replacementOrNew">
+            <option *ngFor="let o of replacementOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Cost Centre</label>
+          <input type="text" class="f-input" placeholder="e.g. CC-ENG-001" [(ngModel)]="form.costCentre" />
+        </div>
+        <div class="field-group">
+          <label>Priority <span class="req-star">*</span></label>
+          <select class="f-input" [(ngModel)]="form.priority">
+            <option *ngFor="let o of priorityOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Work Mode Preference <span class="req-star">*</span></label>
+          <select class="f-input" [(ngModel)]="form.workMode">
+            <option value="" disabled>Select mode</option>
+            <option *ngFor="let o of workModeOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+          </select>
+        </div>
+        <div class="field-group field-group--toggle">
+          <label>Travel Required <span class="req-star">*</span></label>
+          <label class="toggle-wrap">
+            <input type="checkbox" [(ngModel)]="form.isTravelRequired" />
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            <span class="toggle-val">{{ form.isTravelRequired ? 'Yes' : 'No' }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Skills & Qualifications -->
+    <div class="form-section">
+      <div class="form-section-header">
+        <svg class="fs-icon" viewBox="0 0 18 18" fill="none"><path d="M9 2l1.6 4.4H15l-3.8 2.7 1.5 4.4L9 11 5.3 13.5l1.5-4.4L3 6.4h4.4L9 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <h3>Skills &amp; Qualifications</h3>
+      </div>
+      <div class="form-grid">
+        <div class="field-group field-group--full">
+          <label>Required Skills <span class="req-star">*</span></label>
+          <div class="skill-box" [class.focused]="formShowSkillDropdown">
+            <div class="skill-tags-row">
+              <span class="skill-chip" *ngFor="let s of form.skills; trackBy: trackByIndex">
+                {{ s }}<button class="chip-remove" (click)="removeSkill(s)">&#215;</button>
+              </span>
+              <div class="skill-input-wrap">
+                <input type="text" class="skill-input" placeholder="Add skills..."
+                  [(ngModel)]="formSkillInput"
+                  (focus)="formShowSkillDropdown = true"
+                  (input)="formShowSkillDropdown = true" />
+                <div class="skill-dropdown" *ngIf="formShowSkillDropdown && filteredSkillOptions.length">
+                  <div class="skill-opt" *ngFor="let s of filteredSkillOptions; trackBy: trackByIndex" (click)="addSkill(s)">{{ s }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Experience Required</label>
+          <input type="text" class="f-input" placeholder="e.g. 4-6 years" [(ngModel)]="form.experience" />
+        </div>
+        <div class="field-group">
+          <label>Highest Qualification</label>
+          <input type="text" class="f-input" placeholder="e.g. B.Tech / MBA" [(ngModel)]="form.qualification" />
+        </div>
+        <div class="field-group field-group--full">
+          <label>Remarks</label>
+          <textarea class="f-textarea" rows="3" placeholder="Additional comments..." [(ngModel)]="form.remarks"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Job Description -->
+    <div class="form-section">
+      <div class="form-section-header">
+        <svg class="fs-icon" viewBox="0 0 18 18" fill="none"><path d="M4 2h7l4 4v11H4V2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 2v4h4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M6 9h6M6 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <h3>Job Description</h3>
+      </div>
+      <div class="form-grid">
+        <div class="field-group field-group--full">
+          <div class="jd-header-row">
+            <label>JD Content <span class="req-star">*</span></label>
+            <button class="jd-gen-btn" (click)="generateJD()">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 4H14L10.5 7.5 12 12 8 9.5 4 12l1.5-4.5L2 5h4.5L8 1Z" fill="currentColor"/></svg>
+              Auto Generate
+            </button>
+          </div>
+          <textarea class="f-textarea" rows="7" placeholder="Write or auto-generate the job description..." [(ngModel)]="form.jdContent"></textarea>
+        </div>
+        <div class="field-group field-group--full">
+          <label>Job Requirement Summary <span class="req-star">*</span></label>
+          <textarea class="f-textarea" rows="4" placeholder="Summarize what this role requires..." [(ngModel)]="form.jobRequirementSummary"></textarea>
+        </div>
+        <div class="field-group field-group--full">
+          <label>Benefit of this Hiring <span class="req-star">*</span></label>
+          <textarea class="f-textarea" rows="4" placeholder="How does this hire benefit the organization?" [(ngModel)]="form.benefitOfHiring"></textarea>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sticky Form Footer -->
+  <div class="form-footer">
+    <ng-container *ngIf="isViewOnly; else editFooter">
+      <div class="form-footer-right">
+        <button class="btn-ghost" (click)="closeForm()">Close</button>
+      </div>
+    </ng-container>
+    <ng-template #editFooter>
+      <div class="form-footer-right">
+        <button class="btn-ghost" (click)="closeForm()">Cancel</button>
+        <button class="btn-ghost" (click)="resetForm()">Reset</button>
+        <button class="btn-outline-pink" (click)="saveDraft()">Save as Draft</button>
+        <button class="raise-btn" (click)="submitForApproval()">Submit for Approval</button>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     APPROVAL MODAL  (figma-modal pattern)
+══════════════════════════════════════════ -->
+<div class="modal-backdrop" *ngIf="showApprovalModal" (click)="closeApprovalModal()">
+  <div class="figma-modal" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="figma-header">
+      <div>
+        <h2 class="figma-title">Requisition Review</h2>
+        <p class="figma-subtitle">{{ selectedRequisition?.id }} &#8212; {{ selectedRequisition?.jobTitle }}</p>
+      </div>
+      <button class="figma-close" (click)="closeApprovalModal()">
+        <svg viewBox="0 0 18 18" fill="none"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="figma-body" *ngIf="selectedRequisition">
+
+      <!-- Requisition Details -->
+      <section class="figma-card">
+        <div class="figma-card-header">
+          <svg class="figma-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M6 7h6M6 10h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h3>Requisition Details</h3>
+        </div>
+        <div class="figma-grid">
+          <div class="figma-field">
+            <label class="figma-label">Requisition ID</label>
+            <div class="figma-value req-id-cell">{{ selectedRequisition.id }}</div>
+          </div>
+          <div class="figma-field">
+            <label class="figma-label">Job Title</label>
+            <div class="figma-value fw-600">{{ selectedRequisition.jobTitle }}</div>
+          </div>
+          <div class="figma-field">
+            <label class="figma-label">Department</label>
+            <div class="figma-value">{{ selectedRequisition.department }}</div>
+          </div>
+          <div class="figma-field">
+            <label class="figma-label">Designation</label>
+            <div class="figma-value">{{ selectedRequisition.designation }}</div>
+          </div>
+          <div class="figma-field">
+            <label class="figma-label">Vacancies</label>
+            <div class="figma-value">{{ selectedRequisition.vacancy }}</div>
+          </div>
+          <div class="figma-field">
+            <label class="figma-label">Employment Type</label>
+            <div class="figma-value">{{ selectedRequisition.employmentType }}</div>
+          </div>
+          <div class="figma-field">
+            <label class="figma-label">Work Mode</label>
+            <div class="figma-value">{{ selectedRequisition.workMode }}</div>
+          </div>
+          <div class="figma-field">
+            <label class="figma-label">Location</label>
+            <div class="figma-value">{{ selectedRequisition.location }}</div>
+          </div>
+          <div class="figma-field">
+            <label class="figma-label">Budget</label>
+            <div class="figma-value fw-600">{{ formatBudget(selectedRequisition.budget) }}</div>
+          </div>
+          <div class="figma-field">
+            <label class="figma-label">Hiring Manager</label>
+            <div class="figma-value">{{ selectedRequisition.hiringManager }}</div>
+          </div>
+          <div class="figma-field">
+            <label class="figma-label">Priority</label>
+            <div class="figma-value">
+              <span class="status-badge" [ngClass]="priorityClass(selectedRequisition.priority)">{{ selectedRequisition.priority }}</span>
+            </div>
+          </div>
+          <div class="figma-field">
+            <label class="figma-label">Current Status</label>
+            <div class="figma-value">
+              <span class="status-badge" [ngClass]="statusClass(selectedRequisition.status)">{{ selectedRequisition.status }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Required Skills -->
+      <section class="figma-card" *ngIf="selectedRequisition.skills?.length">
+        <div class="figma-card-header">
+          <svg class="figma-icon" viewBox="0 0 18 18" fill="none"><path d="M9 2l1.6 4.4H15l-3.8 2.7 1.5 4.4L9 11 5.3 13.5l1.5-4.4L3 6.4h4.4L9 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          <h3>Required Skills</h3>
+        </div>
+        <div class="skills-preview">
+          <span class="skill-pill" *ngFor="let s of selectedRequisition.skills; trackBy: trackByIndex">{{ s }}</span>
+        </div>
+      </section>
+
+      <!-- Job Summary -->
+      <section class="figma-card" *ngIf="selectedRequisition.jobRequirementSummary">
+        <div class="figma-card-header">
+          <svg class="figma-icon" viewBox="0 0 18 18" fill="none"><path d="M4 2h10a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6l-4 2V4a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          <h3>Job Requirement Summary</h3>
+        </div>
+        <p class="figma-text">{{ selectedRequisition.jobRequirementSummary }}</p>
+      </section>
+
+      <!-- Approval Action -->
+      <section class="figma-card">
+        <div class="figma-card-header">
+          <svg class="figma-icon" viewBox="0 0 18 18" fill="none"><path d="M9 2a7 7 0 1 1 0 14A7 7 0 0 1 9 2Z" stroke="currentColor" stroke-width="1.5"/><path d="M6 9l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>Approval Action</h3>
+        </div>
+
+        <div class="figma-field mb-12" *ngIf="approvalAction === 'delegate'">
+          <label class="figma-label">Delegate To <span class="req-star">*</span></label>
+          <select class="f-input mt-6" [(ngModel)]="delegateTo">
+            <option value="" disabled>Select approver</option>
+            <option *ngFor="let o of delegateOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+          </select>
+        </div>
+
+        <div class="figma-field" *ngIf="approvalAction">
+          <label class="figma-label">
+            {{ approvalAction === 'approve' ? 'Approval Remarks (optional)' :
+               approvalAction === 'reject'  ? 'Rejection Reason *' :
+               approvalAction === 'delegate' ? 'Delegation Notes *' : 'Correction Required *' }}
+          </label>
+          <textarea class="f-textarea mt-6" rows="3"
+            [placeholder]="approvalAction === 'approve' ? 'Optional remarks...' :
+                           approvalAction === 'reject'  ? 'State the reason for rejection...' :
+                           approvalAction === 'delegate' ? 'Notes for the delegated approver...' :
+                           'Describe what needs to be corrected...'"
+            [(ngModel)]="approvalRemarks"></textarea>
+        </div>
+        <p class="select-action-hint" *ngIf="!approvalAction">Select an action below to proceed</p>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <div class="figma-footer">
+      <!-- Mandatory comment -->
+      <div class="approval-comment-wrap">
+        <label class="approval-comment-label">
+          Comment <span class="req-star">*</span>
+          <span class="approval-comment-hint">Required before taking action</span>
+        </label>
+        <textarea class="approval-comment-input"
+                  [(ngModel)]="approvalRemarks"
+                  rows="2"
+                  placeholder="Add your remarks here..."></textarea>
+        <div class="approval-comment-error" *ngIf="approvalCommentError">
+          Please add a comment before proceeding.
+        </div>
+      </div>
+      <!-- Action buttons — final decisions -->
+      <div class="figma-action-row">
+        <button class="app-button app-button--approve" (click)="submitApprovalAction('approve')">
+          <svg viewBox="0 0 18 18" fill="none"><path d="M4 9l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Approve
+        </button>
+        <button class="app-button app-button--cancel" (click)="submitApprovalAction('reject')">
+          <svg viewBox="0 0 18 18" fill="none"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Reject
+        </button>
+        <button class="app-button app-button--delegate" (click)="submitApprovalAction('delegate')">
+          <svg viewBox="0 0 18 18" fill="none"><circle cx="7" cy="6" r="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M2 15c0-2.8 2.2-5 5-5M12 10l3 3-3 3M15 13h-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Delegate
+        </button>
+        <button class="app-button app-button--return" (click)="submitApprovalAction('return')">
+          <svg viewBox="0 0 18 18" fill="none"><path d="M4 9h8a3 3 0 1 1 0 6H8M4 9l3-3M4 9l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Return
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,394 @@
+$text:    #0f172a;
+$text2:   #111827;
+$muted:   #64748b;
+$border:  #e5e7eb;
+$surface: #ffffff;
+$bg:      #f8fafc;
+$blue:    #3b82f6;
+$radius:  14px;
+$shadow:  0 2px 10px rgba(0,0,0,0.07);
+
+.jp-shell { padding: 24px 28px 60px; max-width: 1440px; font-family: 'Outfit', sans-serif; }
+
+// Header
+.jp-header {
+  display: flex; align-items: flex-start; margin-bottom: 14px;
+}
+.jp-header-left { display: flex; flex-direction: column; }
+.jp-title { font-size: 22px; font-weight: 700; color: $text; margin: 0; }
+.mod-breadcrumb {
+  display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin-bottom: 4px; color: $muted;
+  .bc-home { width: 14px; height: 14px; color: $muted; flex-shrink: 0; display: block; }
+  .bc-sep  { color: #cbd5e1; }
+  .bc-link { color: $muted; cursor: pointer; &:hover { color: $blue; } }
+  .bc-curr { color: $text; font-weight: 500; }
+}
+.jp-back-btn {
+  display: inline-flex; align-items: center; gap: 5px; background: none; border: none;
+  font-size: 13px; font-weight: 600; color: $muted; cursor: pointer; font-family: 'Outfit', sans-serif;
+  padding: 6px 10px; border-radius: 7px; white-space: nowrap; margin-top: 4px;
+  svg { width: 14px; height: 14px; }
+  &:hover { background: #f1f5f9; color: $text; }
+}
+.jp-header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.jp-btn-outline {
+  display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px;
+  border: 1.5px solid $border; border-radius: 8px; background: $surface; font-size: 13px; font-weight: 600;
+  color: $text2; cursor: pointer; font-family: 'Outfit', sans-serif; white-space: nowrap;
+  svg { width: 14px; height: 14px; }
+  &:hover { border-color: $blue; color: $blue; }
+  &:disabled { opacity: 0.4; cursor: default; }
+}
+.jp-btn-primary {
+  display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px;
+  border: none; border-radius: 8px; background: $blue; font-size: 13px; font-weight: 600;
+  color: #fff; cursor: pointer; font-family: 'Outfit', sans-serif; white-space: nowrap;
+  svg { width: 14px; height: 14px; }
+  &:hover { opacity: 0.88; }
+}
+
+// Action bar
+.jp-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.jp-filter-select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  svg {
+    position: absolute;
+    right: 10px;
+    width: 10px;
+    height: 10px;
+    color: $muted;
+    pointer-events: none;
+  }
+}
+.jp-filter-select {
+  appearance: none;
+  height: 36px;
+  padding: 0 32px 0 12px;
+  border: 1.5px solid $border;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: 'Outfit', sans-serif;
+  color: $text2;
+  background: $surface;
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: 140px;
+  &:focus { outline: none; border-color: $blue; }
+}
+
+// Tab bar
+.jp-tab-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 2px solid $border; margin-bottom: 16px;
+}
+.jp-tabs { display: flex; gap: 0; }
+.jp-tab {
+  display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px;
+  background: none; border: none; border-bottom: 2.5px solid transparent; margin-bottom: -2px;
+  font-size: 13.5px; font-weight: 600; color: $muted; cursor: pointer; font-family: 'Outfit', sans-serif;
+  &.active { color: $blue; border-bottom-color: $blue; }
+  &:hover:not(.active) { color: $text; }
+}
+.jp-tab-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 18px; padding: 0 5px; border-radius: 99px;
+  background: #f1f5f9; color: $muted; font-size: 11px; font-weight: 700;
+  &.active   { background: #dcfce7; color: #15803d; }
+  &.inactive { background: #fef3c7; color: #b45309; }
+}
+.jp-tab-tools { display: flex; align-items: center; gap: 8px; padding-bottom: 6px; }
+.jp-search-wrap {
+  position: relative; display: flex; align-items: center;
+  svg { position: absolute; left: 10px; width: 14px; height: 14px; color: $muted; pointer-events: none; }
+}
+.jp-search {
+  height: 36px; padding: 0 12px 0 32px; border: 1.5px solid $border; border-radius: 8px;
+  font-size: 12.5px; font-family: 'Outfit', sans-serif; color: $text2; background: $surface;
+  outline: none; min-width: 220px;
+  &:focus { border-color: $blue; }
+}
+.jp-col-wrap { position: relative; }
+.jp-col-btn {
+  width: 34px; height: 34px; border: 1.5px solid $border; border-radius: 7px; background: $surface;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; color: $muted;
+  svg { width: 15px; height: 15px; }
+  &:hover { border-color: $blue; color: $blue; }
+}
+.jp-col-dropdown {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 100;
+  background: $surface; border: 1px solid $border; border-radius: 10px; box-shadow: $shadow;
+  padding: 12px; min-width: 180px;
+}
+.jp-col-title { font-size: 11px; font-weight: 700; color: $muted; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px; }
+.jp-col-check {
+  display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 13px; color: $text2; cursor: pointer;
+  input[type="checkbox"] { accent-color: $blue; width: 14px; height: 14px; }
+}
+
+// Table
+.jp-table-wrap { background: $surface; border-radius: $radius; box-shadow: $shadow; overflow: hidden; }
+.jp-table {
+  width: 100%; border-collapse: collapse;
+  th {
+    padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 700; color: $muted;
+    text-transform: uppercase; letter-spacing: 0.05em; background: $bg; border-bottom: 1px solid $border;
+    white-space: nowrap;
+    input[type="checkbox"] { accent-color: $blue; }
+  }
+  td {
+    padding: 13px 14px; font-size: 13px; color: $text2; border-bottom: 1px solid $border; vertical-align: middle;
+    input[type="checkbox"] { accent-color: $blue; }
+  }
+  tr:last-child td { border-bottom: none; }
+}
+.jp-row { cursor: pointer; &:hover td { background: #fafbfc; } }
+.jp-job-title-cell { display: flex; align-items: center; gap: 10px; }
+.jp-job-icon {
+  width: 32px; height: 32px; border-radius: 8px; background: #eff6ff; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  svg { width: 16px; height: 16px; }
+}
+.jp-job-name { font-size: 13px; font-weight: 600; color: $text; }
+.jp-job-id   { font-size: 11px; color: $muted; }
+.jp-loc { display: flex; align-items: center; gap: 4px; font-size: 12.5px; color: $text2; svg { width: 12px; height: 12px; flex-shrink: 0; } }
+.jp-muted { font-size: 11.5px; color: $muted; }
+.jp-req-badge { display: inline-flex; padding: 2px 8px; border-radius: 6px; background: #f0f7ff; color: #1d4ed8; font-size: 11.5px; font-weight: 600; border: 1px solid #bfdbfe; }
+.jp-skills { display: flex; flex-wrap: wrap; gap: 5px; }
+.jp-skill-chip {
+  display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 99px;
+  background: #f1f5f9; color: $text2; font-size: 11.5px; font-weight: 600; border: 1px solid $border;
+  &.blue { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+}
+.jp-skill-more { font-size: 11.5px; color: $muted; font-weight: 600; }
+.jp-status-badge {
+  display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 99px;
+  font-size: 12px; font-weight: 600; border: 1px solid transparent;
+  &.large { padding: 5px 14px; font-size: 13px; }
+}
+.jp-row-menu {
+  background: none; border: none; cursor: pointer; color: $muted; font-size: 16px;
+  width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  &:hover { background: #f1f5f9; color: $text; }
+}
+.jp-empty { padding: 48px 14px; text-align: center; color: $muted; font-size: 13px; }
+
+// Pagination
+.jp-pagination {
+  display: flex; align-items: center; justify-content: space-between; padding: 14px 4px 0;
+}
+.jp-page-info { font-size: 12.5px; color: $muted; }
+.jp-page-btns { display: flex; gap: 4px; }
+.jp-page-btn {
+  width: 30px; height: 30px; border: 1.5px solid $border; border-radius: 6px; background: $surface;
+  font-size: 12.5px; color: $text2; cursor: pointer; font-family: 'Outfit', sans-serif;
+  display: flex; align-items: center; justify-content: center;
+  &.active { background: $blue; border-color: $blue; color: #fff; }
+  &:disabled { opacity: 0.4; cursor: default; }
+}
+
+// Stepper
+.jp-stepper {
+  display: flex; align-items: center; background: $surface; border-radius: $radius;
+  box-shadow: $shadow; padding: 18px 24px; margin-bottom: 20px;
+}
+.jp-step {
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  &-circle {
+    width: 28px; height: 28px; border-radius: 50%; border: 2px solid #d1d5db; background: $surface;
+    display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
+    color: $muted; flex-shrink: 0; transition: all 0.2s;
+    svg { width: 12px; height: 12px; }
+  }
+  &-label { font-size: 12.5px; font-weight: 600; color: $muted; white-space: nowrap; }
+  &-line { height: 2px; flex: 1; background: #d1d5db; min-width: 24px; margin: 0 8px; }
+  &.active {
+    .jp-step-circle { border-color: $blue; background: #eff6ff; color: $blue; }
+    .jp-step-label  { color: $blue; }
+  }
+  &.done {
+    .jp-step-circle { border-color: #22c55e; background: #22c55e; color: #fff; }
+    .jp-step-label  { color: #15803d; }
+    .jp-step-line   { background: #22c55e; }
+  }
+}
+
+// Create body
+.jp-create-body { display: flex; gap: 20px; align-items: flex-start; }
+.jp-form-col { flex: 1; min-width: 0; }
+.jp-preview-col { width: 340px; flex-shrink: 0; position: sticky; top: 20px; }
+
+.jp-form-card {
+  background: $surface; border-radius: $radius; box-shadow: $shadow; padding: 22px 24px 28px;
+}
+.jp-form-section-title {
+  font-size: 14px; font-weight: 700; color: $text; margin: 0 0 16px;
+  padding-bottom: 12px; border-bottom: 1px solid $border;
+}
+.jp-optional { font-size: 12px; font-weight: 400; color: $muted; }
+.jp-step-hint { font-size: 12.5px; color: $muted; margin: -10px 0 16px; }
+
+.jp-field-grid {
+  display: grid; gap: 14px 18px;
+  &.two-col   { grid-template-columns: 1fr 1fr; }
+  &.three-col { grid-template-columns: 1fr 1fr auto; align-items: end; }
+}
+.jp-field {
+  display: flex; flex-direction: column; gap: 5px;
+  label { font-size: 11.5px; font-weight: 600; color: $muted; }
+}
+.jp-field-check { justify-content: flex-end; padding-bottom: 2px; }
+.req-star { color: #ef4444; }
+.jp-input {
+  height: 36px; padding: 0 10px; border: 1.5px solid $border; border-radius: 8px; font-size: 13px;
+  color: $text2; font-family: 'Outfit', sans-serif; background: $surface; outline: none; box-sizing: border-box; width: 100%;
+  &:focus { border-color: $blue; }
+  &[readonly] { background: #f8fafc; color: $muted; cursor: default; }
+  &.editable { border-color: #fbbf24; background: #fffdf0; &:focus { border-color: $blue; background: $surface; } }
+  &.small { width: 80px; }
+}
+select.jp-input { appearance: auto; cursor: pointer; }
+
+.jp-salary-row { display: flex; align-items: center; gap: 6px; }
+.jp-salary-unit { font-size: 12px; color: $muted; font-weight: 600; white-space: nowrap; }
+.jp-salary-sep  { font-size: 13px; color: $muted; }
+.jp-inline-check {
+  display: flex; align-items: center; gap: 7px; font-size: 13px; color: $text2; cursor: pointer;
+  input[type="checkbox"] { accent-color: $blue; width: 14px; height: 14px; }
+}
+.jp-field-hint { font-size: 11px; color: $muted; margin: 4px 0 0; }
+
+.jp-skills-field {
+  display: flex; flex-wrap: wrap; gap: 7px; padding: 10px 12px; border: 1.5px solid $border;
+  border-radius: 8px; min-height: 44px; background: #f8fafc;
+}
+.jp-skill-tag {
+  display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 99px;
+  background: #eff6ff; color: #1d4ed8; font-size: 12px; font-weight: 600; border: 1px solid #bfdbfe;
+}
+.jp-skill-x { cursor: pointer; color: #93c5fd; &:hover { color: #1d4ed8; } }
+.jp-skill-placeholder { font-size: 12.5px; color: #c0cad8; }
+
+.jp-publish-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.jp-publish-opt {
+  display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 8px;
+  border: 1.5px solid $border; font-size: 13px; color: $text2; cursor: pointer;
+  transition: all 0.15s;
+  input[type="checkbox"] { accent-color: $blue; width: 14px; height: 14px; flex-shrink: 0; }
+  svg { width: 18px; height: 18px; flex-shrink: 0; }
+  &.selected { border-color: $blue; background: #eff6ff; color: $blue; }
+  &:hover:not(.selected) { border-color: #c7d2fe; background: #f8faff; }
+}
+
+// Editor toolbar
+.jp-editor-toolbar {
+  display: flex; align-items: center; gap: 3px; padding: 6px 10px;
+  border: 1.5px solid $border; border-bottom: none; border-radius: 8px 8px 0 0;
+  background: #f8fafc; flex-wrap: wrap;
+}
+.jp-tb-sel {
+  height: 26px; padding: 0 6px; border: 1px solid $border; border-radius: 5px;
+  font-size: 11.5px; font-family: 'Outfit', sans-serif; color: $text2; background: $surface; outline: none;
+}
+.jp-tb-btn {
+  width: 26px; height: 26px; border: none; border-radius: 5px; background: none;
+  font-size: 12px; color: $text2; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-family: 'Outfit', sans-serif;
+  &:hover { background: #e2e8f0; }
+}
+.jp-tb-sep { display: inline-block; width: 1px; height: 16px; background: $border; margin: 0 3px; }
+.jp-textarea {
+  width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1.5px solid $border;
+  border-radius: 0 0 8px 8px; font-size: 13px; font-family: 'Outfit', sans-serif; color: $text2;
+  background: $surface; outline: none; resize: vertical; line-height: 1.7;
+  &:focus { border-color: $blue; }
+}
+
+// Posting channels step
+.jp-channel-list { display: flex; flex-direction: column; gap: 0; }
+.jp-channel-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; border-bottom: 1px solid $border;
+  &:last-child { border-bottom: none; }
+}
+.jp-channel-toggle {
+  display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer;
+  input[type="checkbox"] { accent-color: $blue; width: 14px; height: 14px; }
+  svg { width: 18px; height: 18px; }
+}
+.jp-channel-name { font-size: 13px; font-weight: 600; color: $text; display: block; }
+.jp-channel-sub  { font-size: 11.5px; color: $muted; }
+.jp-channel-status { font-size: 12px; font-weight: 600; color: $muted; &.on { color: #15803d; } }
+
+// Review sections
+.jp-review-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid $border; &:last-child { border-bottom: none; } }
+.jp-review-heading { font-size: 13px; font-weight: 700; color: $text; margin: 0 0 12px; }
+.jp-review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+.jp-review-row { display: flex; flex-direction: column; gap: 2px; }
+.jp-rl { font-size: 11px; font-weight: 600; color: $muted; text-transform: uppercase; letter-spacing: 0.04em; }
+.jp-rv { font-size: 13px; font-weight: 600; color: $text; }
+
+// Preview card
+.jp-preview-card { background: $surface; border-radius: $radius; box-shadow: $shadow; overflow: hidden; }
+.jp-preview-header {
+  display: flex; align-items: center; justify-content: space-between; padding: 14px 16px;
+  border-bottom: 1px solid $border; background: $bg;
+}
+.jp-preview-label { font-size: 11.5px; font-weight: 700; color: $muted; text-transform: uppercase; letter-spacing: 0.05em; }
+.jp-preview-ext {
+  width: 24px; height: 24px; border: none; background: none; cursor: pointer; color: $muted;
+  display: flex; align-items: center; justify-content: center;
+  svg { width: 14px; height: 14px; }
+  &:hover { color: $blue; }
+}
+.jp-preview-body { padding: 16px; }
+.jp-prev-title { font-size: 18px; font-weight: 700; color: $text; margin: 0 0 4px; }
+.jp-prev-dept  { font-size: 13px; color: $muted; margin: 0 0 10px; }
+.jp-prev-meta  {
+  display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: $muted; margin-bottom: 16px;
+  span { display: flex; align-items: center; gap: 4px; }
+  svg { width: 12px; height: 12px; }
+}
+.jp-prev-section {
+  margin-bottom: 14px;
+  h4 { font-size: 13px; font-weight: 700; color: $text; margin: 0 0 6px; }
+  p  { font-size: 12.5px; color: $text2; line-height: 1.6; margin: 0; }
+  ul { padding-left: 18px; margin: 0; li { font-size: 12.5px; color: $text2; margin-bottom: 3px; } }
+}
+.jp-apply-btn {
+  display: block; width: 100%; padding: 10px; border: none; border-radius: 8px; background: $blue;
+  color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif;
+  margin-bottom: 16px; &:hover { opacity: 0.88; }
+}
+.jp-prev-summary { border-top: 1px solid $border; padding-top: 14px; }
+.jp-prev-sum-title { font-size: 11.5px; font-weight: 700; color: $muted; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 8px; }
+.jp-prev-sum-row {
+  display: flex; justify-content: space-between; gap: 8px; padding: 5px 0;
+  border-bottom: 1px solid #f1f5f9; font-size: 12px;
+  span:first-child { color: $muted; }
+  span:last-child  { font-weight: 600; color: $text2; text-align: right; }
+}
+
+// View mode
+.jp-view-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+.jp-view-main { display: flex; flex-direction: column; gap: 0; }
+.jp-note-bar {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #fffdf0;
+  border: 1px solid #fde68a; border-radius: 8px; font-size: 13px; color: #92400e;
+  svg { width: 18px; height: 18px; flex-shrink: 0; }
+}
+.jp-field-editable label { display: flex; align-items: center; gap: 6px; }
+.jp-edit-badge {
+  display: inline-flex; padding: 1px 7px; border-radius: 99px; background: #fef3c7;
+  color: #b45309; font-size: 10.5px; font-weight: 700; border: 1px solid #fde68a;
+}

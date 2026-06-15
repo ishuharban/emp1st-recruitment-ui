@@ -1,0 +1,167 @@
+<div class="dashboard">
+  <button class="profile-close-btn" *ngIf="profileMode" (click)="closeProfileMode.emit()" aria-label="Close profile mode">
+    ✕
+  </button>
+
+  <div class="top-row">
+    <div class="card profile-card" [class.profile-focus]="profileMode">
+      <div class="profile-banner">
+        <div class="profile-avatar">{{ employee.name[0] }}</div>
+      </div>
+      <div class="profile-body">
+        <h3 class="emp-name">{{ employee.name }}</h3>
+        <p class="emp-role">{{ employee.role }}</p>
+        <div class="emp-meta-grid">
+          <div class="meta-block">
+            <span class="meta-label">Employee ID</span>
+            <span class="meta-val">{{ employee.id }}</span>
+          </div>
+          <div class="meta-block">
+            <span class="meta-label">Date of Joining</span>
+            <span class="meta-val">{{ employee.doj }}</span>
+          </div>
+        </div>
+        <div class="meta-block mt-12">
+          <span class="meta-label">Email Address</span>
+          <span class="meta-val small">{{ employee.email }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card leave-card" [class.dimmed]="profileMode">
+      <div class="card-header">
+        <svg class="hdr-icon" viewBox="0 0 20 20" fill="none">
+          <rect x="3" y="4" width="14" height="13" rx="2" stroke="#c0185c" stroke-width="1.6" />
+          <path d="M3 8h14M7 2v4M13 2v4" stroke="#c0185c" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+        <h4 class="hdr-title">LEAVE REPORT</h4>
+      </div>
+
+      <div class="leave-body">
+        <svg class="donut" viewBox="0 0 90 90">
+          <circle cx="45" cy="45" r="35" fill="none" stroke="#f0f0f0" stroke-width="11" />
+          <circle
+            cx="45"
+            cy="45"
+            r="35"
+            fill="none"
+            stroke="#8b1a1a"
+            stroke-width="11"
+            stroke-linecap="round"
+            [attr.stroke-dasharray]="earnedLeaveArc + ' ' + (donutCircumference - earnedLeaveArc)"
+            transform="rotate(-90 45 45)"
+          />
+        </svg>
+
+        <div class="legend">
+          <div class="leg-row" *ngFor="let l of leaveData; trackBy: trackByIndex">
+            <span class="leg-dot" [style.background]="l.color"></span>
+            <span class="leg-label">{{ l.label }}</span>
+            <span class="leg-val">{{ l.value }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="holiday-box">
+        <p class="hol-title">Upcoming Holidays</p>
+        <p class="hol-name">{{ upcomingHoliday.name }}</p>
+        <p class="hol-date">{{ upcomingHoliday.date }}</p>
+      </div>
+    </div>
+
+    <div class="info-col" [class.dimmed]="profileMode">
+      <div class="card info-card">
+        <span class="info-label">New Hires</span>
+        <span class="info-val">No New Hires</span>
+      </div>
+
+      <div class="card info-card">
+        <span class="info-label">Upcoming Leaves</span>
+        <span class="info-val">No Upcoming Leaves</span>
+      </div>
+
+      <div class="card celebrations-card">
+        <div class="celeb-row">
+          <p class="celeb-heading">Upcoming<br />Celebrations</p>
+          <button class="arrow-btn">&#8249;</button>
+
+          <div class="celeb-items">
+            <div class="celeb-item" *ngFor="let c of celebrations; trackBy: trackByIndex">
+              <div class="celeb-avatar" [style.background]="c.color">{{ c.initials }}</div>
+              <div class="celeb-info">
+                <p class="celeb-name">{{ c.name }}</p>
+                <p class="celeb-type">
+                  <svg viewBox="0 0 14 14" fill="none" width="11" height="11">
+                    <path d="M7 1c.5 2 2 3 4 3C9 7 9 10 7 13 5 10 5 7 3 4c2 0 3.5-1 4-3Z" fill="#c0185c" />
+                  </svg>
+                  {{ c.type }}
+                </p>
+              </div>
+              <span class="celeb-date">{{ c.date }}</span>
+            </div>
+          </div>
+          <button class="arrow-btn">&#8250;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-row" [class.dimmed]="profileMode">
+    <div class="card dept-card">
+      <div class="dept-header">
+        <h4 class="section-title">MY DEPARTMENT</h4>
+        <button class="grid-icon-btn" title="View grid">
+          <svg viewBox="0 0 18 18" fill="none" width="16" height="16">
+            <rect x="1" y="1" width="6" height="6" rx="1" stroke="#c0185c" stroke-width="1.5" />
+            <rect x="11" y="1" width="6" height="6" rx="1" stroke="#c0185c" stroke-width="1.5" />
+            <rect x="1" y="11" width="6" height="6" rx="1" stroke="#c0185c" stroke-width="1.5" />
+            <rect x="11" y="11" width="6" height="6" rx="1" stroke="#c0185c" stroke-width="1.5" />
+          </svg>
+        </button>
+      </div>
+      <div class="dept-grid">
+        <div class="member-chip" *ngFor="let m of members; trackBy: trackById">
+          <div class="mem-avatar" [style.background]="m.color">{{ m.initials }}</div>
+          <div class="mem-info">
+            <p class="mem-name">{{ m.name }}</p>
+            <p class="mem-id">{{ m.id }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card skills-card">
+      <h4 class="section-title">MY SKILLS</h4>
+      <div class="skill-list">
+        <div class="skill-row" *ngFor="let s of skills; trackBy: trackByIndex">
+          <svg class="skill-star" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2l2.4 5h5.3l-4.3 3.1 1.6 5.2L10 12.4l-5 2.9 1.6-5.2L2.3 7h5.3L10 2Z" stroke="#ccc" stroke-width="1.4" stroke-linejoin="round" />
+          </svg>
+          <span class="skill-name">{{ s }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card attend-card">
+      <h4 class="section-title">Weekly Attendance Report</h4>
+      <div class="attend-list">
+        <div class="attend-row" *ngFor="let a of attendance; trackBy: trackByIndex">
+          <span class="attend-day">{{ a.day }}</span>
+          <div class="bar-track">
+            <div class="bar" [ngClass]="a.status" [style.width.%]="a.pct">
+              <span [class.dark-text]="a.status === 'gray'">
+                {{ a.hours ?? 'No Data' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="chat-fab" title="Chat">
+  <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="white" opacity=".9" />
+  </svg>
+</button>
