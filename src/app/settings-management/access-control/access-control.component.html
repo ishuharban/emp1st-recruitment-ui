@@ -1,0 +1,306 @@
+<div class="ac-shell">
+
+  <!-- ── Header ── -->
+  <div class="ac-header">
+    <div>
+      <nav class="mod-breadcrumb">
+        <svg class="bc-home" width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 6.5L8 2l6 4.5V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M6 15V9h4v6" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        <span class="bc-sep">›</span>
+        <span class="bc-link">Configuration</span>
+        <span class="bc-sep">›</span>
+        <span class="bc-curr">Access Control</span>
+      </nav>
+      <h1 class="ac-title">Access Control</h1>
+    </div>
+    <div class="ac-header-right">
+      <button class="ac-btn-primary" (click)="openCreate()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Create Role
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Stat Cards ── -->
+  <div class="ac-stats">
+    <div class="ac-stat-card">
+      <div class="ac-stat-icon" style="background:#eff6ff">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div><div class="ac-stat-label">Total Roles</div><div class="ac-stat-val">{{ totalRoles }}</div></div>
+    </div>
+    <div class="ac-stat-card">
+      <div class="ac-stat-icon" style="background:#dcfce7">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div><div class="ac-stat-label">Active Roles</div><div class="ac-stat-val">{{ activeRoles }}</div></div>
+    </div>
+    <div class="ac-stat-card">
+      <div class="ac-stat-icon" style="background:#f3e8ff">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#9333ea" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      </div>
+      <div><div class="ac-stat-label">Custom Roles</div><div class="ac-stat-val">{{ customRoles }}</div></div>
+    </div>
+    <div class="ac-stat-card">
+      <div class="ac-stat-icon" style="background:#fff7ed">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div><div class="ac-stat-label">Users Assigned</div><div class="ac-stat-val">{{ usersAssigned }}</div></div>
+    </div>
+  </div>
+
+  <!-- ── 3-Panel Body ── -->
+  <div class="ac-body">
+
+    <!-- ── Left: Role List ── -->
+    <div class="ac-left">
+      <div class="ac-left-head">
+        <span class="ac-left-title">Roles</span>
+        <button class="ac-icon-btn" (click)="openCreate()" title="Add Role">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+      <div class="ac-search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="ac-search" placeholder="Search role..." [(ngModel)]="searchQuery"/>
+      </div>
+
+      <div class="ac-role-list">
+        <div *ngFor="let role of filteredRoles; trackBy: trackById"
+             class="ac-role-item"
+             [class.active]="selectedRole?.id === role.id"
+             (click)="selectRole(role)">
+          <div class="ac-role-avatar" [style.background]="role.color">
+            {{ getRoleInitials(role.name) }}
+          </div>
+          <div class="ac-role-info">
+            <span class="ac-role-name">{{ role.name }}</span>
+            <span class="ac-role-count">{{ role.userCount }} Users</span>
+          </div>
+          <span *ngIf="!role.active" class="ac-inactive-dot"></span>
+        </div>
+      </div>
+
+      <button class="ac-view-inactive">
+        View Inactive Roles ({{ roles.length - activeRoles }})
+      </button>
+    </div>
+
+    <!-- ── Center: Permission Matrix ── -->
+    <div class="ac-center">
+      <div class="ac-center-head">
+        <span class="ac-perm-for">Permissions for :
+          <span class="ac-perm-role">{{ selectedRole?.name }}</span>
+        </span>
+        <button class="ac-bulk-btn" [class.active]="bulkEditMode" (click)="toggleBulkEdit()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          {{ bulkEditMode ? 'Save Changes' : 'Bulk Edit Permissions' }}
+        </button>
+      </div>
+
+      <div class="ac-matrix-wrap">
+        <table class="ac-matrix">
+          <thead>
+            <tr>
+              <th class="ac-th-module">Module</th>
+              <th *ngFor="let lbl of permLabels; trackBy: trackByIndex" class="ac-th-perm">{{ lbl }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let mod of selectedRole?.modules; trackBy: trackByIndex" class="ac-mrow">
+              <td class="ac-mod-name-cell">
+                <div class="ac-mod-icon-wrap">
+                  <!-- req -->
+                  <svg *ngIf="mod.icon==='req'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  <!-- job -->
+                  <svg *ngIf="mod.icon==='job'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+                  <!-- pipe -->
+                  <svg *ngIf="mod.icon==='pipe'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <!-- int -->
+                  <svg *ngIf="mod.icon==='int'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <!-- doc -->
+                  <svg *ngIf="mod.icon==='doc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  <!-- offer -->
+                  <svg *ngIf="mod.icon==='offer'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  <!-- rep -->
+                  <svg *ngIf="mod.icon==='rep'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  <!-- cfg -->
+                  <svg *ngIf="mod.icon==='cfg'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+                  <!-- usr -->
+                  <svg *ngIf="mod.icon==='usr'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <!-- auto -->
+                  <svg *ngIf="mod.icon==='auto'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  <!-- mail -->
+                  <svg *ngIf="mod.icon==='mail'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                {{ mod.name }}
+              </td>
+              <td *ngFor="let key of permKeys; trackBy: trackByIndex" class="ac-perm-cell"
+                  [class.editable]="bulkEditMode && mod.permissions[key] !== null"
+                  (click)="togglePerm(mod, key)">
+                <!-- Allowed -->
+                <span *ngIf="mod.permissions[key] === true" class="ac-perm-icon allowed">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                <!-- Denied -->
+                <span *ngIf="mod.permissions[key] === false" class="ac-perm-icon denied">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </span>
+                <!-- Not applicable -->
+                <span *ngIf="mod.permissions[key] === null" class="ac-perm-na">—</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Legend -->
+      <div class="ac-legend">
+        <span class="ac-leg-item">
+          <span class="ac-perm-icon allowed sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+          Allowed
+        </span>
+        <span class="ac-leg-item">
+          <span class="ac-perm-icon denied sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+          Denied
+        </span>
+        <span class="ac-leg-item">
+          <span class="ac-perm-na">—</span>
+          Not Applicable
+        </span>
+      </div>
+    </div>
+
+    <!-- ── Right: Role Details ── -->
+    <div class="ac-right" *ngIf="selectedRole">
+      <div class="ac-right-head">
+        <span class="ac-right-title">Role Details</span>
+        <button class="ac-edit-role-btn" (click)="toggleBulkEdit()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit Role
+        </button>
+      </div>
+
+      <div class="ac-right-body">
+        <!-- Role Info -->
+        <div class="ac-rd-section">
+          <div class="ac-rd-row">
+            <span class="ac-rd-label">Role Name</span>
+            <span class="ac-rd-val fw">{{ selectedRole.name }}</span>
+          </div>
+          <div class="ac-rd-row col">
+            <span class="ac-rd-label">Description</span>
+            <span class="ac-rd-val sm">{{ selectedRole.description }}</span>
+          </div>
+          <div class="ac-rd-row">
+            <span class="ac-rd-label">Role Type</span>
+            <span class="ac-rd-val fw">{{ selectedRole.type }}</span>
+          </div>
+          <div class="ac-rd-row">
+            <span class="ac-rd-label">Status</span>
+            <span class="ac-status-badge" [class.inactive]="!selectedRole.active">
+              {{ selectedRole.active ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+          <div class="ac-rd-row">
+            <span class="ac-rd-label">Created On</span>
+            <span class="ac-rd-val">{{ selectedRole.createdOn }}</span>
+          </div>
+          <div class="ac-rd-row">
+            <span class="ac-rd-label">Last Updated</span>
+            <span class="ac-rd-val sm">{{ selectedRole.lastUpdated }}</span>
+          </div>
+        </div>
+
+        <!-- Assigned Users -->
+        <div class="ac-rd-section bd-top">
+          <div class="ac-rd-sec-head">
+            <span class="ac-rd-sec-title">Assigned Users ({{ selectedRole.userCount }})</span>
+            <button class="ac-view-all-btn">View All</button>
+          </div>
+          <div class="ac-user-list">
+            <div class="ac-user-row" *ngFor="let u of selectedRole.assignedUsers; trackBy: trackByIndex">
+              <div class="ac-user-avatar" [style.background]="u.color">{{ u.initials }}</div>
+              <div class="ac-user-info">
+                <span class="ac-user-name">{{ u.name }}</span>
+                <span class="ac-user-role">{{ u.role }}</span>
+              </div>
+            </div>
+            <div class="ac-user-more" *ngIf="selectedRole.userCount > selectedRole.assignedUsers.length">
+              + {{ selectedRole.userCount - selectedRole.assignedUsers.length }} more users
+            </div>
+          </div>
+        </div>
+
+        <!-- Access Scope -->
+        <div class="ac-rd-section bd-top">
+          <span class="ac-rd-sec-title">Access Scope</span>
+          <div class="ac-scope-list">
+            <div class="ac-scope-item" *ngFor="let s of selectedRole.accessScope; trackBy: trackByIndex">
+              <span class="ac-scope-icon" [class.allowed]="s.allowed" [class.denied]="!s.allowed">
+                <svg *ngIf="s.allowed"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <svg *ngIf="!s.allowed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </span>
+              <span class="ac-scope-label">{{ s.module }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="ac-right-actions">
+        <button class="ac-act-btn outline" (click)="cloneRole()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Clone Role
+        </button>
+        <button class="ac-act-btn outline">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>
+          Assign Users
+        </button>
+        <button class="ac-act-btn danger" (click)="disableRole()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          {{ selectedRole.active ? 'Disable Role' : 'Enable Role' }}
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /ac-body -->
+
+
+  <!-- ── Create Role Modal ── -->
+  <div class="ac-modal-overlay" *ngIf="showCreateModal" (click)="closeCreate()">
+    <div class="ac-modal" (click)="$event.stopPropagation()">
+      <div class="ac-modal-head">
+        <div>
+          <h3 class="ac-modal-title">Create New Role</h3>
+          <p class="ac-modal-sub">Define role name, type and description</p>
+        </div>
+        <button class="ac-modal-close" (click)="closeCreate()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="ac-modal-body">
+        <div class="ac-mf">
+          <label>Role Name <span class="req">*</span></label>
+          <input class="ac-minput" type="text" placeholder="e.g. Finance Manager" [(ngModel)]="createForm.name"/>
+        </div>
+        <div class="ac-mf">
+          <label>Role Type</label>
+          <select class="ac-minput" [(ngModel)]="createForm.type">
+            <option>System Role</option>
+            <option>Custom Role</option>
+          </select>
+        </div>
+        <div class="ac-mf">
+          <label>Description</label>
+          <textarea class="ac-minput" rows="3" placeholder="Brief description of this role's responsibilities..." [(ngModel)]="createForm.description"></textarea>
+        </div>
+      </div>
+      <div class="ac-modal-foot">
+        <button class="ac-btn-outline" (click)="closeCreate()">Cancel</button>
+        <button class="ac-btn-primary" (click)="submitCreate()">Create Role</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+

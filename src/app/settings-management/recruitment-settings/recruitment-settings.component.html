@@ -1,0 +1,285 @@
+<div class="sett-shell">
+
+  <div class="sett-header">
+    <div>
+      <h1 class="sett-title">Recruitment Settings</h1>
+      <p class="sett-sub">Configure global settings and preferences for the recruitment process.</p>
+    </div>
+    <div class="sett-header-actions">
+      <button class="btn-reset">Reset to Default</button>
+      <button class="btn-save">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Row 1: General + Job & Requisition -->
+  <div class="sett-row">
+
+    <!-- General Settings -->
+    <div class="sett-card">
+      <div class="sett-card-head">
+        <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.41 1.41M14.37 14.37l1.41 1.41M4.22 15.78l1.41-1.41M14.37 5.63l1.41-1.41" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <h2>General Settings</h2>
+      </div>
+      <div class="fields-grid">
+        <div class="fg">
+          <label>Default Time Zone <span class="rs">*</span><span class="tip" [attr.data-tip]="tips['timezone']">ⓘ</span></label>
+          <select class="fi" [(ngModel)]="rs.timezone"><option *ngFor="let o of timezoneOptions; trackBy: trackByIndex" [value]="o">{{o}}</option></select>
+        </div>
+        <div class="fg">
+          <label>Date Format <span class="rs">*</span><span class="tip" [attr.data-tip]="tips['dateFormat']">ⓘ</span></label>
+          <select class="fi" [(ngModel)]="rs.dateFormat"><option *ngFor="let o of dateFormatOptions; trackBy: trackByIndex" [value]="o">{{o}}</option></select>
+        </div>
+        <div class="fg">
+          <label>Time Format <span class="rs">*</span><span class="tip" [attr.data-tip]="tips['timeFormat']">ⓘ</span></label>
+          <select class="fi" [(ngModel)]="rs.timeFormat"><option *ngFor="let o of timeFormatOptions; trackBy: trackByIndex" [value]="o">{{o}}</option></select>
+        </div>
+        <div class="fg">
+          <label>Default Currency <span class="rs">*</span><span class="tip" [attr.data-tip]="tips['currency']">ⓘ</span></label>
+          <select class="fi" [(ngModel)]="rs.currency"><option *ngFor="let o of currencyOptions; trackBy: trackByIndex" [value]="o">{{o}}</option></select>
+        </div>
+        <div class="fg">
+          <label>Language <span class="rs">*</span><span class="tip" [attr.data-tip]="tips['language']">ⓘ</span></label>
+          <select class="fi" [(ngModel)]="rs.language"><option *ngFor="let o of languageOptions; trackBy: trackByIndex" [value]="o">{{o}}</option></select>
+        </div>
+        <div class="fg">
+          <label>Decimal Format<span class="tip" [attr.data-tip]="tips['decimalFormat']">ⓘ</span></label>
+          <select class="fi" [(ngModel)]="rs.decimalFormat"><option *ngFor="let o of decimalOptions; trackBy: trackByIndex" [value]="o">{{o}}</option></select>
+        </div>
+        <div class="fg">
+          <label>Number Format<span class="tip" [attr.data-tip]="tips['numberFormat']">ⓘ</span></label>
+          <select class="fi" [(ngModel)]="rs.numberFormat"><option *ngFor="let o of decimalOptions; trackBy: trackByIndex" [value]="o">{{o}}</option></select>
+        </div>
+        <div class="fg">
+          <label>Week Start On<span class="tip" [attr.data-tip]="tips['weekStartOn']">ⓘ</span></label>
+          <select class="fi" [(ngModel)]="rs.weekStartOn"><option *ngFor="let o of weekStartOptions; trackBy: trackByIndex" [value]="o">{{o}}</option></select>
+        </div>
+        <div class="fg">
+          <label>Fiscal Year Start<span class="tip" [attr.data-tip]="tips['fiscalYearStart']">ⓘ</span></label>
+          <select class="fi" [(ngModel)]="rs.fiscalYearStart"><option *ngFor="let o of fiscalYearOptions; trackBy: trackByIndex" [value]="o">{{o}}</option></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Job & Requisition Settings -->
+    <div class="sett-card">
+      <div class="sett-card-head">
+        <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 8h14M7 2v4M13 2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <h2>Job &amp; Requisition Settings</h2>
+      </div>
+      <div class="fields-grid">
+        <div class="fg">
+          <label>Default Job Expiry (Days) <span class="rs">*</span><span class="tip" [attr.data-tip]="tips['defaultJobExpiry']">ⓘ</span></label>
+          <input type="number" class="fi" [(ngModel)]="rs.defaultJobExpiry" min="1" />
+        </div>
+        <div class="fg">
+          <label>Allow Job Reposting<span class="tip" [attr.data-tip]="tips['allowJobReposting']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.allowJobReposting"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Auto Close Requisition<span class="tip" [attr.data-tip]="tips['autoCloseReq']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.autoCloseRequisition"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Auto Close After (Days)<span class="tip" [attr.data-tip]="tips['autoCloseAfter']">ⓘ</span></label>
+          <input type="number" class="fi" [(ngModel)]="rs.autoCloseAfterDays" min="1" />
+        </div>
+        <div class="fg">
+          <label>Requisition ID Prefix <span class="rs">*</span><span class="tip" [attr.data-tip]="tips['reqIdPrefix']">ⓘ</span></label>
+          <input type="text" class="fi" [(ngModel)]="rs.reqIdPrefix" />
+        </div>
+        <div class="fg">
+          <label>Requisition ID Sequence <span class="rs">*</span><span class="tip" [attr.data-tip]="tips['reqIdSequence']">ⓘ</span></label>
+          <input type="number" class="fi" [(ngModel)]="rs.reqIdSequence" min="1" />
+        </div>
+        <div class="fg">
+          <label>Allow Multiple Openings<span class="tip" [attr.data-tip]="tips['multipleOpenings']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.allowMultipleOpenings"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Max Openings Per Requisition<span class="tip" [attr.data-tip]="tips['maxOpenings']">ⓘ</span></label>
+          <input type="number" class="fi" [(ngModel)]="rs.maxOpeningsPerReq" min="1" />
+        </div>
+        <div class="fg">
+          <label>Require Hiring Manager Approval<span class="tip" [attr.data-tip]="tips['hmApproval']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.requireHMApproval"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Candidate & Application + Interview -->
+  <div class="sett-row">
+
+    <div class="sett-card">
+      <div class="sett-card-head">
+        <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <h2>Candidate &amp; Application Settings</h2>
+      </div>
+      <div class="fields-grid">
+        <div class="fg">
+          <label>Candidate Self Registration<span class="tip" [attr.data-tip]="tips['selfReg']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.candidateSelfReg"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Duplicate Candidate Check<span class="tip" [attr.data-tip]="tips['dupCheck']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.duplicateCheck"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Candidate Data Masking<span class="tip" [attr.data-tip]="tips['dataMasking']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.dataMasking"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Default Application Source<span class="tip" [attr.data-tip]="tips['appSource']">ⓘ</span></label>
+          <select class="fi" [(ngModel)]="rs.defaultAppSource"><option *ngFor="let o of appSourceOptions; trackBy: trackByIndex" [value]="o">{{o}}</option></select>
+        </div>
+        <div class="fg">
+          <label>Application Auto Save<span class="tip" [attr.data-tip]="tips['autoSave']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.autoSave"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Session Timeout (Minutes)<span class="tip" [attr.data-tip]="tips['sessionTimeout']">ⓘ</span></label>
+          <input type="number" class="fi" [(ngModel)]="rs.sessionTimeout" min="5" />
+        </div>
+        <div class="fg">
+          <label>Resume Size Limit (MB) <span class="rs">*</span><span class="tip" [attr.data-tip]="tips['resumeSize']">ⓘ</span></label>
+          <input type="number" class="fi" [(ngModel)]="rs.resumeSizeLimit" min="1" />
+        </div>
+        <div class="fg">
+          <label>Allowed Resume Types<span class="tip" [attr.data-tip]="tips['coverLetter']">ⓘ</span></label>
+          <input type="text" class="fi" value="PDF, DOC, DOCX" readonly />
+        </div>
+        <div class="fg">
+          <label>Cover Letter Mandatory<span class="tip" [attr.data-tip]="tips['coverLetter']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.coverLetterMandatory"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="sett-card">
+      <div class="sett-card-head">
+        <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 8h14M7 2v4M13 2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="7" cy="12" r="1" fill="currentColor"/><circle cx="10" cy="12" r="1" fill="currentColor"/></svg>
+        <h2>Interview Settings</h2>
+      </div>
+      <div class="fields-grid">
+        <div class="fg">
+          <label>Default Interview Reminder (Hours) <span class="rs">*</span><span class="tip" [attr.data-tip]="tips['reminder1']">ⓘ</span></label>
+          <select class="fi" [(ngModel)]="rs.interviewReminder1"><option *ngFor="let o of reminder1Options; trackBy: trackByIndex" [value]="o">{{o}}</option></select>
+        </div>
+        <div class="fg">
+          <label>Interview Reminder 2 (Hours)<span class="tip" [attr.data-tip]="tips['reminder2']">ⓘ</span></label>
+          <select class="fi" [(ngModel)]="rs.interviewReminder2"><option *ngFor="let o of reminder2Options; trackBy: trackByIndex" [value]="o">{{o}}</option></select>
+        </div>
+        <div class="fg">
+          <label>Allow Reschedule by Candidate<span class="tip" [attr.data-tip]="tips['reschedule']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.allowReschedule"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Interview Feedback Mandatory<span class="tip" [attr.data-tip]="tips['feedbackMandatory']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.feedbackMandatory"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Feedback Submission (Days)<span class="tip" [attr.data-tip]="tips['feedbackDays']">ⓘ</span></label>
+          <input type="number" class="fi" [(ngModel)]="rs.feedbackDays" min="1" />
+        </div>
+        <div class="fg">
+          <label>Allow Walk-in Interviews<span class="tip" [attr.data-tip]="tips['walkIn']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.allowWalkIn"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Default Interview Duration (Minutes)<span class="tip" [attr.data-tip]="tips['duration']">ⓘ</span></label>
+          <input type="number" class="fi" [(ngModel)]="rs.interviewDuration" min="15" />
+        </div>
+        <div class="fg">
+          <label>Max Interviewers Per Panel<span class="tip" [attr.data-tip]="tips['maxInterviewers']">ⓘ</span></label>
+          <input type="number" class="fi" [(ngModel)]="rs.maxInterviewers" min="1" />
+        </div>
+        <div class="fg">
+          <label>Enable Interview Calendar Sync<span class="tip" [attr.data-tip]="tips['calendarSync']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.calendarSync"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Document + Other -->
+  <div class="sett-row">
+
+    <div class="sett-card">
+      <div class="sett-card-head">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M5 2h7l4 4v13H5V2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 2v4h4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <h2>Document Settings</h2>
+      </div>
+      <div class="fields-grid">
+        <div class="fg">
+          <label>Allow Candidate Document Upload<span class="tip" [attr.data-tip]="tips['allowDocUpload']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.allowDocUpload"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Document Size Limit (MB) <span class="rs">*</span><span class="tip" [attr.data-tip]="tips['docSize']">ⓘ</span></label>
+          <input type="number" class="fi" [(ngModel)]="rs.docSizeLimit" min="1" />
+        </div>
+        <div class="fg">
+          <label>Allowed Document Types</label>
+          <input type="text" class="fi" value="PDF, JPG, PNG, DOC, DOCX" readonly />
+        </div>
+        <div class="fg">
+          <label>Document Expiry Tracking<span class="tip" [attr.data-tip]="tips['docExpiry']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.docExpiryTracking"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Mandatory Document Check Before Offer<span class="tip" [attr.data-tip]="tips['mandatoryDoc']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.mandatoryDocCheck"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Auto Delete Documents After (Years)<span class="tip" [attr.data-tip]="tips['autoDelete']">ⓘ</span></label>
+          <input type="number" class="fi" [(ngModel)]="rs.autoDeleteAfter" min="1" />
+        </div>
+      </div>
+    </div>
+
+    <div class="sett-card">
+      <div class="sett-card-head">
+        <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 6v4l2.5 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <h2>Other Settings</h2>
+      </div>
+      <div class="fields-grid">
+        <div class="fg">
+          <label>Career Portal Visibility<span class="tip" [attr.data-tip]="tips['careerPortal']">ⓘ</span></label>
+          <select class="fi" [(ngModel)]="rs.careerPortalVisibility"><option *ngFor="let o of visibilityOptions; trackBy: trackByIndex" [value]="o">{{o}}</option></select>
+        </div>
+        <div class="fg">
+          <label>Show Salary Range in Job Posting<span class="tip" [attr.data-tip]="tips['showSalary']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.showSalaryRange"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Enable Analytics<span class="tip" [attr.data-tip]="tips['analytics']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.enableAnalytics"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>GDPR / Data Privacy Consent<span class="tip" [attr.data-tip]="tips['gdpr']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.gdprConsent"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Enable Audit Trail<span class="tip" [attr.data-tip]="tips['auditTrail']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.enableAuditTrail"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+        <div class="fg">
+          <label>Enable API Access<span class="tip" [attr.data-tip]="tips['apiAccess']">ⓘ</span></label>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="rs.enableApiAccess"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-card">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" fill="#3b82f6" fill-opacity="0.12"/><path d="M10 9v5" stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="6.5" r="1" fill="#3b82f6"/></svg>
+    <div>
+      <strong>Note:</strong>
+      <ul>
+        <li>Fields marked with <span class="rs">*</span> are mandatory.</li>
+        <li>Changes will be applicable to all users based on their permissions.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>

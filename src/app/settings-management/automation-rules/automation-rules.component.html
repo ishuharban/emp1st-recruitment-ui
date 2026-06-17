@@ -1,0 +1,95 @@
+<div class="sett-shell">
+
+  <div class="sett-header">
+    <div>
+      <h1 class="sett-title">Automation Rules</h1>
+      <p class="sett-sub">Configure automated actions triggered by recruitment events.</p>
+    </div>
+    <div class="sett-header-actions">
+      <button class="btn-save" (click)="showAddRule = true">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Add Rule
+      </button>
+    </div>
+  </div>
+
+  <!-- Rules table -->
+  <div class="stage-table-card">
+    <table class="stage-table">
+      <thead>
+        <tr>
+          <th>Rule Name</th>
+          <th>Trigger</th>
+          <th>Action</th>
+          <th>Applied To</th>
+          <th class="col-status">Status</th>
+          <th class="col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let rule of autoRules; trackBy: trackById">
+          <td><strong>{{ rule.name }}</strong></td>
+          <td class="auto-muted">{{ rule.trigger }}</td>
+          <td class="auto-muted">{{ rule.action }}</td>
+          <td>{{ rule.appliedTo }}</td>
+          <td>
+            <span class="auto-status-dot" [class.active]="rule.active"></span>
+            <span class="auto-status-text" [class.active]="rule.active">{{ rule.active ? 'Active' : 'Inactive' }}</span>
+          </td>
+          <td class="col-actions">
+            <button class="tbl-icon-btn" title="Edit">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+            </button>
+            <label class="tgl" style="transform:scale(0.85)">
+              <input type="checkbox" [(ngModel)]="rule.active"/>
+              <span class="tgl-track"><span class="tgl-thumb"></span></span>
+            </label>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add new rule form -->
+  <div class="auto-add-card" *ngIf="showAddRule">
+    <h3 class="auto-add-title">Add New Automation Rule</h3>
+    <div class="auto-add-grid">
+      <div class="fg">
+        <label>Rule Name</label>
+        <input type="text" class="fi" [(ngModel)]="newRule.name" placeholder="Enter rule name" />
+      </div>
+      <div class="fg">
+        <label>Trigger</label>
+        <select class="fi" [(ngModel)]="newRule.trigger">
+          <option value="" disabled>Select Trigger</option>
+          <option *ngFor="let o of triggerOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Action</label>
+        <select class="fi" [(ngModel)]="newRule.action">
+          <option value="" disabled>Select Action</option>
+          <option *ngFor="let o of actionOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Applied To</label>
+        <select class="fi" [(ngModel)]="newRule.appliedTo">
+          <option *ngFor="let o of appliedToOpts; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+        </select>
+      </div>
+      <div class="fg auto-status-fg">
+        <label>Status</label>
+        <div class="auto-status-row">
+          <label class="tgl"><input type="checkbox" [(ngModel)]="newRule.active"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+          <span style="font-size:13px;color:#374151">{{ newRule.active ? 'Active' : 'Inactive' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="auto-add-footer">
+      <button class="btn-reset" (click)="showAddRule = false">Cancel</button>
+      <button class="btn-save" (click)="saveAutoRule()">Save Rule</button>
+    </div>
+  </div>
+
+</div>

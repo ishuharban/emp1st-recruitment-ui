@@ -1,0 +1,171 @@
+<div class="sett-shell">
+  <div class="sett-header">
+    <div>
+      <h1 class="sett-title">User Invitation &amp; Access Management</h1>
+      <p class="sett-sub">Invite users to the Recruitment Module and manage their roles and permissions.</p>
+    </div>
+    <div class="sett-header-actions">
+      <div class="ui-search-wrap">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M12 12l-2-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <input type="text" class="ui-search" [(ngModel)]="uiSearchQuery" placeholder="Search users..." />
+      </div>
+      <button class="btn-save" (click)="uiShowInviteForm = true">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Invite User
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="ui-summary-row">
+    <div class="ui-sum-card">
+      <span class="ui-sum-label">Total Users</span>
+      <span class="ui-sum-val">{{ uiSummary.total }}</span>
+    </div>
+    <div class="ui-sum-card active">
+      <span class="ui-sum-label">Active</span>
+      <span class="ui-sum-val" style="color:#15803d">{{ uiSummary.active }}</span>
+    </div>
+    <div class="ui-sum-card pending">
+      <span class="ui-sum-label">Pending</span>
+      <span class="ui-sum-val" style="color:#d97706">{{ uiSummary.pending }}</span>
+    </div>
+    <div class="ui-sum-card">
+      <span class="ui-sum-label">Expired</span>
+      <span class="ui-sum-val" style="color:#dc2626">{{ uiSummary.expired }}</span>
+    </div>
+    <div class="ui-sum-card">
+      <span class="ui-sum-label">Disabled</span>
+      <span class="ui-sum-val" style="color:#9ca3af">{{ uiSummary.disabled }}</span>
+    </div>
+  </div>
+
+  <!-- Body: User list + Role Panel -->
+  <div class="ui-body">
+
+    <!-- Left: User directory -->
+    <div class="ui-main">
+      <div class="stage-table-card">
+        <table class="stage-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Department</th>
+              <th>Role</th>
+              <th>Access Scope</th>
+              <th>Status</th>
+              <th>Last Login</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let u of filteredUiUsers; trackBy: trackByIndex">
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="ui-user-avatar">{{ u.name[0] }}</div>
+                  <strong style="font-size:13px">{{ u.name }}</strong>
+                </div>
+              </td>
+              <td style="font-size:12.5px;color:#64748b">{{ u.email }}</td>
+              <td style="font-size:12.5px">{{ u.dept }}</td>
+              <td><span class="ui-role-chip">{{ u.role }}</span></td>
+              <td>
+                <div style="display:flex;flex-wrap:wrap;gap:3px">
+                  <span class="ui-scope-tag" *ngFor="let s of u.scope; trackBy: trackByIndex">{{ s }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="auto-status-dot" [class.active]="u.status === 'Active'"></span>
+                <span class="auto-status-text" [class.active]="u.status === 'Active'">{{ u.status }}</span>
+              </td>
+              <td style="font-size:12px;color:#64748b">{{ u.lastLogin }}</td>
+              <td class="col-actions">
+                <button class="tbl-icon-btn" title="Edit"><svg viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+                <button class="tbl-icon-btn danger" title="Disable"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 8h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Invite form -->
+      <div class="auto-add-card" *ngIf="uiShowInviteForm">
+        <h3 class="auto-add-title">Invite New User</h3>
+        <div class="auto-add-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="fg"><label>First Name <span style="color:#ef4444">*</span></label><input type="text" class="fi" [(ngModel)]="uiInvite.firstName" placeholder="First name" /></div>
+          <div class="fg"><label>Last Name <span style="color:#ef4444">*</span></label><input type="text" class="fi" [(ngModel)]="uiInvite.lastName" placeholder="Last name" /></div>
+          <div class="fg"><label>Email Address <span style="color:#ef4444">*</span></label><input type="email" class="fi" [(ngModel)]="uiInvite.email" placeholder="user@company.com" /></div>
+          <div class="fg"><label>Department <span style="color:#ef4444">*</span></label><select class="fi" [(ngModel)]="uiInvite.department"><option *ngFor="let o of uiDeptOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option></select></div>
+          <div class="fg"><label>Role <span style="color:#ef4444">*</span></label><select class="fi" [(ngModel)]="uiInvite.role" (ngModelChange)="uiSelectedRole = $event"><option *ngFor="let o of uiRoleOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option></select></div>
+          <div class="fg"><label>Reporting To</label><select class="fi" [(ngModel)]="uiInvite.reportingTo"><option *ngFor="let o of uiReportingOpts; trackBy: trackByIndex" [value]="o">{{ o }}</option></select></div>
+        </div>
+        <div class="ui-invite-lower">
+          <div class="ui-invite-scope">
+            <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px">Access Scope</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <label class="en-check"><input type="checkbox" [(ngModel)]="uiInvite.scope.requisitions"/>Requisition Management</label>
+              <label class="en-check"><input type="checkbox" [(ngModel)]="uiInvite.scope.candidates"/>Candidate Pipeline</label>
+              <label class="en-check"><input type="checkbox" [(ngModel)]="uiInvite.scope.interviews"/>Interview Management</label>
+              <label class="en-check"><input type="checkbox" [(ngModel)]="uiInvite.scope.offers"/>Offer Management</label>
+              <label class="en-check"><input type="checkbox" [(ngModel)]="uiInvite.scope.config"/>Recruitment Configuration</label>
+              <label class="en-check"><input type="checkbox" [(ngModel)]="uiInvite.scope.reports"/>Reports &amp; Analytics</label>
+            </div>
+          </div>
+          <div class="ui-invite-settings">
+            <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px">Invitation Settings</div>
+            <div class="fg" style="margin-bottom:10px">
+              <label>Invitation Expiry Days</label>
+              <div style="display:flex;align-items:center;gap:6px">
+                <input type="number" class="sla-input" [(ngModel)]="uiInvite.expiryDays" style="width:60px" /> <span style="font-size:12px;color:#64748b">Days</span>
+              </div>
+            </div>
+            <div class="en-toggle-rows">
+              <div class="en-toggle-row"><span>Send Welcome Email</span><label class="tgl"><input type="checkbox" [(ngModel)]="uiInvite.sendWelcomeEmail"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label></div>
+              <div class="en-toggle-row"><span>Force Password Setup</span><label class="tgl"><input type="checkbox" [(ngModel)]="uiInvite.forcePasswordSetup"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label></div>
+              <div class="en-toggle-row"><span>Enable SSO Login</span><label class="tgl"><input type="checkbox" [(ngModel)]="uiInvite.enableSSO"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label></div>
+              <div class="en-toggle-row"><span>MFA Required</span><label class="tgl"><input type="checkbox" [(ngModel)]="uiInvite.mfaRequired"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label></div>
+            </div>
+          </div>
+        </div>
+        <div class="auto-add-footer">
+          <button class="btn-reset" (click)="uiShowInviteForm = false">Cancel</button>
+          <button class="btn-save" (click)="sendInvitation()">Send Invitation</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Role Permission Preview -->
+    <div class="ui-role-panel">
+      <div class="ma-card-head">
+        <h3>Role Permission Preview</h3>
+        <span class="tip" data-tip="Preview what permissions this role grants before sending invitation.">ⓘ</span>
+      </div>
+      <div class="fg" style="margin-bottom:14px">
+        <label>Role</label>
+        <select class="fi" [(ngModel)]="uiSelectedRole">
+          <option *ngFor="let o of uiRoleOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+        </select>
+      </div>
+      <div class="ui-role-desc">
+        <div *ngIf="uiSelectedRole === 'HR Administrator'" class="ui-role-about">Full access to recruitment configuration and all transactions.</div>
+        <div *ngIf="uiSelectedRole === 'Recruiter'" class="ui-role-about">Manage candidates, schedule interviews, create offers.</div>
+        <div *ngIf="uiSelectedRole === 'Hiring Manager'" class="ui-role-about">Review candidates, participate in approvals, review feedback.</div>
+        <div *ngIf="uiSelectedRole === 'Interviewer'" class="ui-role-about">View interview schedules and submit interview feedback.</div>
+        <div *ngIf="uiSelectedRole === 'Department Head'" class="ui-role-about">Requisition approvals and offer approvals.</div>
+      </div>
+      <div class="ui-perm-title">Permissions</div>
+      <div class="ui-perm-list">
+        <div class="ui-perm-item" *ngFor="let p of uiSelectedRolePerms; trackBy: trackByIndex" [class.allowed]="p.allowed">
+          <span class="ui-perm-icon">{{ p.allowed ? '✓' : '✗' }}</span>
+          <span>{{ p.perm }}</span>
+        </div>
+      </div>
+      <div class="note-card" style="margin-top:16px">
+        <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" fill="#3b82f6" fill-opacity="0.12"/><path d="M10 9v5" stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="6.5" r="1" fill="#3b82f6"/></svg>
+        <div style="font-size:11.5px;color:#1e40af">Role changes are captured in audit logs per business rule BR-UI-005.</div>
+      </div>
+    </div>
+
+  </div>
+</div>

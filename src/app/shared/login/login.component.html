@@ -1,0 +1,64 @@
+<div class="login-container">
+  <!-- Loading Page -->
+  <div class="loading-page" *ngIf="isLoading">
+    <div class="loader"></div>
+    <h2>Loading...</h2>
+  </div>
+
+  <!-- Login Form Page -->
+  <div class="login-page" *ngIf="!isLoading">
+    <div class="login-card">
+      <h2>Welcome Back</h2>
+      <p>Please login to your account</p>
+
+      <!--  Wrong credentials error -->
+      <div class="error-alert" *ngIf="errorMessage">
+        ⚠️ {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        
+        <!-- Username -->
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            formControlName="username"
+            class="form-control"
+            [class.is-invalid]="usernameControl?.invalid && usernameControl?.touched"
+            placeholder="Enter Username"
+          />
+          <!--  Validation error -->
+          <div class="field-error" *ngIf="usernameControl?.invalid && usernameControl?.touched">
+            Username required hai
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            class="form-control"
+            [class.is-invalid]="passwordControl?.invalid && passwordControl?.touched"
+            placeholder="Enter Password"
+          />
+          <!--  Validation error -->
+          <div class="field-error" *ngIf="passwordControl?.invalid && passwordControl?.touched">
+            Password required hai
+          </div>
+        </div>
+
+        <!--  Loading state button -->
+        <button type="submit" class="btn-login" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Login</span>
+          <span *ngIf="isLoading">Logging in...</span>
+        </button>
+
+      </form>
+    </div>
+  </div>
+</div>

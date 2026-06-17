@@ -1,0 +1,176 @@
+<div class="sett-shell fb-shell">
+
+  <div class="sett-header">
+    <div>
+      <h1 class="sett-title">Candidate Form Builder</h1>
+      <p class="sett-sub">Create and customize the candidate application form used on the career portal.</p>
+    </div>
+    <div class="sett-header-actions">
+      <button class="btn-reset">
+        <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M9 5v4l2.5 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Preview Form
+      </button>
+      <button class="btn-save">Save Form</button>
+    </div>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="fb-tabs">
+    <button class="fb-tab" [class.active]="formTab === 'fields'" (click)="formTab = 'fields'">Form Fields</button>
+    <button class="fb-tab" [class.active]="formTab === 'settings'" (click)="formTab = 'settings'">Form Settings</button>
+  </div>
+
+  <!-- Builder body -->
+  <div class="fb-body" *ngIf="formTab === 'fields'">
+
+    <!-- Left: field palette -->
+    <div class="fb-palette">
+      <div class="fb-palette-title">Add Field</div>
+      <p class="fb-palette-hint">Drag and drop the field type to add it to the form.</p>
+      <div class="fb-field-types">
+        <button class="fb-field-type" *ngFor="let ft of fieldTypes; trackBy: trackByIndex" (click)="addFieldToSection(ft.type)">
+          <span class="ft-icon">{{ ft.icon }}</span>
+          <span>{{ ft.type }}</span>
+        </button>
+      </div>
+      <div class="fb-palette-note">
+        <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" fill="#eff6ff"/><path d="M9 8v4" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="6" r="0.8" fill="#3b82f6"/></svg>
+        <div>
+          <strong>Note:</strong>
+          <p>Drag the field type from here and drop it in the form to create new fields.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center: form canvas -->
+    <div class="fb-canvas">
+      <div class="fb-canvas-header">
+        <span class="fb-canvas-title">Application Form</span>
+        <div class="fb-canvas-tools">
+          <button class="fb-tool-btn" title="Undo"><svg viewBox="0 0 18 18" fill="none"><path d="M3 9a6 6 0 1 1 1.8 4.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M3 5v4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="fb-tool-btn" title="Redo"><svg viewBox="0 0 18 18" fill="none"><path d="M15 9a6 6 0 1 0-1.8 4.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M15 5v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="fb-tool-btn danger" title="Clear form"><svg viewBox="0 0 18 18" fill="none"><path d="M3 4h12M7 4V3h4v1M6 4l.5 10h5L12 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+
+      <div class="fb-sections">
+        <div class="fb-section" *ngFor="let sec of formSections; trackBy: trackById">
+          <div class="fb-section-head" (click)="toggleSectionCollapse(sec)">
+            <span class="fb-section-name">{{ sec.name }}</span>
+            <svg class="fb-section-caret" [class.collapsed]="sec.collapsed" viewBox="0 0 12 8" fill="none"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <div class="fb-fields" *ngIf="!sec.collapsed">
+            <div class="fb-field-row" *ngFor="let field of sec.fields; trackBy: trackById"
+                 [class.selected]="selectedFormField?.id === field.id"
+                 (click)="selectFormField(field)">
+              <svg class="fb-drag" viewBox="0 0 16 16" fill="none"><path d="M4 5h8M4 8h8M4 11h8" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <div class="fb-field-info">
+                <span class="fb-field-name">{{ field.name }} <span class="req-star" *ngIf="field.mandatory">*</span></span>
+                <span class="fb-field-type">{{ field.type }}</span>
+              </div>
+              <div class="fb-field-controls">
+                <label class="fb-check">
+                  <input type="checkbox" [(ngModel)]="field.mandatory" (click)="$event.stopPropagation()" />
+                  <span>Mandatory</span>
+                </label>
+                <label class="tgl fb-tgl" (click)="$event.stopPropagation()">
+                  <input type="checkbox" [(ngModel)]="field.visible" />
+                  <span class="tgl-track"><span class="tgl-thumb"></span></span>
+                </label>
+                <span class="fb-vis-label">Visible</span>
+                <button class="fb-icon-btn" title="Edit" (click)="selectFormField(field); $event.stopPropagation()">
+                  <svg viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+                </button>
+                <button class="fb-icon-btn danger" title="Delete" (click)="deleteFormField(sec.id, field.id); $event.stopPropagation()">
+                  <svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M5 4l.5 9h5L11 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="fb-add-section" (click)="addFormSection()">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Add Section
+      </button>
+    </div>
+
+    <!-- Right: field properties -->
+    <div class="fb-props" *ngIf="selectedFormField">
+      <div class="fb-props-title">Field Properties</div>
+      <div class="fb-props-name">{{ selectedFormField.name }}</div>
+
+      <div class="fb-props-fields">
+        <div class="fp-group">
+          <label>Field Label</label>
+          <input class="fp-input" type="text" [(ngModel)]="selectedFormField.name" />
+        </div>
+        <div class="fp-group">
+          <label>Field Type</label>
+          <select class="fp-input" [(ngModel)]="selectedFormField.type">
+            <option *ngFor="let ft of fieldTypes; trackBy: trackByIndex" [value]="ft.type">{{ ft.type }}</option>
+          </select>
+        </div>
+        <div class="fp-group fp-inline">
+          <label class="fb-check">
+            <input type="checkbox" [(ngModel)]="selectedFormField.mandatory" />
+            <span>Mandatory</span>
+          </label>
+        </div>
+        <div class="fp-group fp-inline">
+          <label class="tgl">
+            <input type="checkbox" [(ngModel)]="selectedFormField.visible" />
+            <span class="tgl-track"><span class="tgl-thumb"></span></span>
+          </label>
+          <span class="fp-tgl-label">Visible</span>
+        </div>
+        <div class="fp-group">
+          <label>Placeholder</label>
+          <input class="fp-input" type="text" [(ngModel)]="selectedFormField.placeholder" />
+        </div>
+        <div class="fp-group">
+          <label>Help Text</label>
+          <textarea class="fp-input fp-textarea" rows="3" [(ngModel)]="selectedFormField.helpText"></textarea>
+        </div>
+        <div class="fp-group">
+          <label>Validation</label>
+          <select class="fp-input" [(ngModel)]="selectedFormField.validation">
+            <option *ngFor="let v of validationOptions; trackBy: trackByIndex" [value]="v">{{ v }}</option>
+          </select>
+        </div>
+        <div class="fp-group">
+          <label>Default Value</label>
+          <input class="fp-input" type="text" [(ngModel)]="selectedFormField.defaultValue" placeholder="Enter default value" />
+        </div>
+        <div class="fp-group">
+          <label>Field Key (System Generated)</label>
+          <input class="fp-input" type="text" [value]="selectedFormField.key" readonly />
+        </div>
+        <button class="fb-delete-btn" (click)="deleteFormField(formSections[0].id, selectedFormField!.id)">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M5 4l.5 9h5L11 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Delete Field
+        </button>
+      </div>
+    </div>
+
+    <div class="fb-props fb-props-empty" *ngIf="!selectedFormField">
+      <div class="fb-props-title">Field Properties</div>
+      <p class="fb-props-hint">Click a field to edit its properties.</p>
+    </div>
+
+  </div>
+
+  <div class="note-card" style="margin-top:16px">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" fill="#3b82f6" fill-opacity="0.12"/><path d="M10 9v5" stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="6.5" r="1" fill="#3b82f6"/></svg>
+    <div>
+      <strong>Note:</strong>
+      <ul>
+        <li>Mark fields as Mandatory to make them required for submission.</li>
+        <li>Changes will be reflected on the career portal after publishing the form.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>

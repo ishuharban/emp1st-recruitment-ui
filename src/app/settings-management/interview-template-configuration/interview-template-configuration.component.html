@@ -1,0 +1,283 @@
+<div class="sett-shell">
+  <div class="sett-header">
+    <div>
+      <h1 class="sett-title">Interview Template Configuration</h1>
+      <p class="sett-sub">Create and manage interview templates, evaluation criteria, questions and scorecards.</p>
+    </div>
+    <button class="btn-reset">Duplicate Template</button>
+  </div>
+
+  <!-- Meta bar -->
+  <div class="it-meta-bar">
+    <div class="fg">
+      <label>Template Name <span style="color:#ef4444">*</span></label>
+      <input type="text" class="fi" [(ngModel)]="itTemplateName" />
+    </div>
+    <div class="fg">
+      <label>Department</label>
+      <select class="fi" [(ngModel)]="itDepartment">
+        <option *ngFor="let o of itDeptOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Interview Type <span style="color:#ef4444">*</span></label>
+      <select class="fi" [(ngModel)]="itInterviewType">
+        <option *ngFor="let o of itTypeOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Status</label>
+      <div style="display:flex;align-items:center;gap:8px">
+        <select class="fi" [(ngModel)]="itStatus">
+          <option *ngFor="let o of itStatusOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body: 3-column -->
+  <div class="it-body">
+
+    <!-- Left: Competencies + Rec Rules -->
+    <div class="it-col">
+
+      <div class="it-card">
+        <div class="it-card-head">
+          <span class="it-sec-num">1.</span>
+          <h3>Evaluation Criteria / Competencies</h3>
+          <span class="tip" data-tip="Define criteria used to evaluate the candidate.">ⓘ</span>
+          <button class="btn-add-stage" style="margin-left:auto;font-size:11.5px;padding:6px 12px">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Add Competency
+          </button>
+        </div>
+        <table class="ma-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Competency</th>
+              <th>Description</th>
+              <th>Weightage (%)</th>
+              <th class="text-center">Mandatory</th>
+              <th class="text-center">Active</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of itCompetencies; trackBy: trackById">
+              <td style="font-weight:600;color:#9ca3af">{{ c.id }}</td>
+              <td style="font-weight:600">{{ c.name }}</td>
+              <td style="font-size:12px;color:#64748b">{{ c.description }}</td>
+              <td><input type="number" class="sla-input" [(ngModel)]="c.weightage" min="0" max="100" /></td>
+              <td class="text-center">
+                <label class="tgl"><input type="checkbox" [(ngModel)]="c.mandatory"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+              </td>
+              <td class="text-center">
+                <label class="tgl"><input type="checkbox" [(ngModel)]="c.active"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+              </td>
+              <td class="col-actions">
+                <button class="tbl-icon-btn"><svg viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+                <button class="tbl-icon-btn danger"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M5 4l.5 9h5L11 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="it-total-row">
+              <td colspan="3"><strong>Total Weightage</strong></td>
+              <td colspan="4"><span class="it-total-val" [class.over]="itTotalWeightage !== 100">{{ itTotalWeightage }}%</span></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="it-card">
+        <div class="it-card-head">
+          <span class="it-sec-num">3.</span>
+          <h3>Recommendation Rules</h3>
+          <span class="tip" data-tip="Define score ranges and hiring recommendations.">ⓘ</span>
+          <button class="tbl-icon-btn" style="margin-left:auto"><svg viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+        </div>
+        <table class="ma-table">
+          <thead>
+            <tr>
+              <th>Score Range (%)</th>
+              <th>Recommendation</th>
+              <th>Color</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of itRules; trackBy: trackByIndex">
+              <td>{{ r.range }}</td>
+              <td>
+                <select class="fi" style="height:28px;font-size:12px" [(ngModel)]="r.recommendation">
+                  <option *ngFor="let o of itRecommendationOpts; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+                </select>
+              </td>
+              <td><span class="color-swatch" [style.background]="r.color"></span></td>
+              <td style="font-size:12px;color:#64748b">{{ r.description }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- Center: Questions + Settings -->
+    <div class="it-col">
+
+      <div class="it-card">
+        <div class="it-card-head">
+          <span class="it-sec-num">2.</span>
+          <h3>Interview Questions</h3>
+          <span class="tip" data-tip="Questions asked during the interview.">ⓘ</span>
+          <button class="btn-add-stage" style="margin-left:auto;font-size:11.5px;padding:6px 12px">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Add Question
+          </button>
+        </div>
+        <table class="ma-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Question</th>
+              <th>Type</th>
+              <th>Max Score <span class="tip" data-tip="Maximum score for this question.">ⓘ</span></th>
+              <th class="text-center">Mandatory</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let q of itQuestions; trackBy: trackById">
+              <td style="font-weight:600;color:#9ca3af">{{ q.id }}</td>
+              <td style="font-size:12.5px;max-width:160px">{{ q.question }}</td>
+              <td>
+                <select class="fi" style="height:28px;font-size:12px;min-width:90px" [(ngModel)]="q.type">
+                  <option *ngFor="let t of itQuestionTypes; trackBy: trackByIndex" [value]="t">{{ t }}</option>
+                </select>
+              </td>
+              <td><input type="number" class="sla-input" [(ngModel)]="q.maxScore" /></td>
+              <td class="text-center">
+                <label class="tgl"><input type="checkbox" [(ngModel)]="q.mandatory"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+              </td>
+              <td class="col-actions">
+                <button class="tbl-icon-btn"><svg viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+                <button class="tbl-icon-btn danger"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M5 4l.5 9h5L11 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="it-total-row">
+              <td colspan="2">Total Questions: <strong>{{ itQuestions.length }}</strong></td>
+              <td colspan="4">Total Score: <strong>{{ itQuestionsScore }}</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="it-card">
+        <div class="it-card-head">
+          <span class="it-sec-num">4.</span>
+          <h3>Template Settings</h3>
+          <span class="tip" data-tip="Configure additional template behaviours.">ⓘ</span>
+        </div>
+        <div class="en-toggle-rows">
+          <div class="en-toggle-row">
+            <span>Allow Overall Comments</span>
+            <label class="tgl"><input type="checkbox" [(ngModel)]="itSettings.allowComments"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+          </div>
+          <div class="en-toggle-row">
+            <span>Show Total Score to Interviewer</span>
+            <label class="tgl"><input type="checkbox" [(ngModel)]="itSettings.showScore"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+          </div>
+          <div class="en-toggle-row">
+            <span>Allow Attachment</span>
+            <label class="tgl"><input type="checkbox" [(ngModel)]="itSettings.allowAttachment"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+          </div>
+          <div class="en-toggle-row">
+            <span>Enable Interviewer Recommendation</span>
+            <label class="tgl"><input type="checkbox" [(ngModel)]="itSettings.enableRecommendation"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+          </div>
+          <div class="en-toggle-row">
+            <span>Auto Calculate Recommendation</span>
+            <label class="tgl"><input type="checkbox" [(ngModel)]="itSettings.autoCalcRecommendation"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+          </div>
+          <div class="en-toggle-row">
+            <span>Passing Score (%) for Recommendation</span>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input type="number" class="sla-input" [(ngModel)]="itSettings.passingScore" style="width:56px" />
+              <span style="font-size:12px;color:#64748b">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right: Feedback Preview -->
+    <div class="it-card it-preview-card">
+      <div class="it-card-head">
+        <span class="it-sec-num">5.</span>
+        <h3>Feedback Form Preview</h3>
+        <button class="tbl-icon-btn" style="margin-left:auto" title="Preview Full Screen"><svg viewBox="0 0 16 16" fill="none"><path d="M3 10v3h3M13 6V3h-3M3 6V3h3M13 10v3h-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="it-prev-cand">
+        <div class="ma-avatar" style="width:40px;height:40px;font-size:14px">AC</div>
+        <div>
+          <div style="font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em">Candidate Name</div>
+          <div style="font-size:14px;font-weight:700;color:#0f172a">Arjun Choudhary</div>
+          <div style="font-size:12px;color:#64748b">Software Engineer</div>
+        </div>
+      </div>
+      <table class="it-rating-table">
+        <thead>
+          <tr><th>Competency</th><th>Rating (1-5)</th><th>Score</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of itPreviewRatings; trackBy: trackByIndex">
+            <td style="font-size:12px">{{ r.competency }}</td>
+            <td>
+              <div class="it-rating-row">
+                <label *ngFor="let n of [1,2,3,4,5]; trackBy: trackByIndex" class="it-radio-lbl">
+                  <input type="radio" [name]="'rating_' + r.competency" [value]="n" [(ngModel)]="r.selected" />
+                  <span [class.checked]="r.selected === n">{{ n }}</span>
+                </label>
+              </div>
+            </td>
+            <td style="font-weight:600;font-size:12.5px">{{ ratingScore(r) }}/{{ r.maxScore }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="fg" style="margin:14px 0 10px">
+        <label>Comments</label>
+        <textarea class="fi" rows="2" [(ngModel)]="itPreviewComment" placeholder="Enter your comments about the candidate..." style="height:auto;padding:8px 10px;resize:vertical;font-size:12.5px"></textarea>
+      </div>
+      <div class="it-score-row">
+        <span>Total Score</span>
+        <span class="it-score-val">{{ itTotalScore }} / 100 ({{ itTotalScore }}%)</span>
+      </div>
+      <div class="it-rec-section">
+        <div style="font-size:11.5px;font-weight:600;color:#374151;margin-bottom:8px">Overall Recommendation</div>
+        <div class="it-rec-row">
+          <label *ngFor="let o of itRecommendationOpts; trackBy: trackByIndex" class="it-rec-opt" [class.selected]="itPreviewRecommendation === o">
+            <input type="radio" name="itRecPrev" [value]="o" [(ngModel)]="itPreviewRecommendation" />
+            {{ o }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="ma-footer">
+    <div class="ma-footer-meta">
+      <span>Last Updated By: Admin User</span>
+      <span>Last Updated On: 10-Jun-2026 10:00 AM</span>
+    </div>
+    <div class="sett-header-actions">
+      <button class="btn-reset">Cancel</button>
+      <button class="btn-reset">Reset</button>
+      <button class="btn-save">Save Template</button>
+    </div>
+  </div>
+</div>

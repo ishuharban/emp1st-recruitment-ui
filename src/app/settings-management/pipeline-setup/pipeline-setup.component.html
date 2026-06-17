@@ -1,0 +1,135 @@
+<div class="sett-shell">
+
+  <div class="sett-header">
+    <div>
+      <h1 class="sett-title">Pipeline Setup</h1>
+      <p class="sett-sub">Configure the recruitment pipeline stages, their sequence, SLA and stage specific rules.</p>
+    </div>
+    <div class="sett-header-actions">
+      <button class="btn-add-stage" (click)="addStage()">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Add Stage
+      </button>
+      <button class="btn-save">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Info card -->
+  <div class="pipeline-info">
+    <div class="pi-about">
+      <svg class="pi-about-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#eff6ff"/><path d="M12 11v6" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="8" r="1.2" fill="#3b82f6"/></svg>
+      <div>
+        <strong>About Pipeline</strong>
+        <p>Candidates will move through the stages defined below.<br>Drag and drop to change the sequence of stages.</p>
+      </div>
+    </div>
+    <div class="pi-stats">
+      <div class="pi-stat">
+        <div class="pi-stat-icon blue">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="#3b82f6" stroke-width="2"/><path d="M9 9h6M9 13h4" stroke="#3b82f6" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div class="pi-stat-label">Total Stages</div>
+          <div class="pi-stat-num">{{ totalStages }}</div>
+        </div>
+      </div>
+      <div class="pi-divider"></div>
+      <div class="pi-stat">
+        <div class="pi-stat-icon green">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#22c55e" stroke-width="2"/><path d="M7.5 12l3 3 6-6" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div class="pi-stat-label">Active Stages</div>
+          <div class="pi-stat-num">{{ activeStagesCnt }}</div>
+        </div>
+      </div>
+      <div class="pi-divider"></div>
+      <div class="pi-stat">
+        <div class="pi-stat-icon grey">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#9ca3af" stroke-width="2"/><path d="M9 9l6 6M15 9l-6 6" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div class="pi-stat-label">Inactive Stages</div>
+          <div class="pi-stat-num">{{ inactiveStagesCnt }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage table -->
+  <div class="stage-table-card">
+    <table class="stage-table">
+      <thead>
+        <tr>
+          <th class="col-drag"></th>
+          <th class="col-seq">#</th>
+          <th>Stage Name</th>
+          <th>Description</th>
+          <th>Stage Color</th>
+          <th>Mandatory Action Before Exit</th>
+          <th class="col-sla">SLA (Days)</th>
+          <th class="col-notif">Notifications Enabled</th>
+          <th class="col-status">Status</th>
+          <th class="col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let stage of stages; trackBy: trackById">
+          <td class="col-drag"><svg viewBox="0 0 16 16" fill="none"><path d="M4 5h8M4 8h8M4 11h8" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/></svg></td>
+          <td class="col-seq">{{ stage.seq }}</td>
+          <td>
+            <ng-container *ngIf="!stage.editing">{{ stage.name }}</ng-container>
+            <input *ngIf="stage.editing" type="text" class="tbl-input" [(ngModel)]="stage.name" />
+          </td>
+          <td>
+            <ng-container *ngIf="!stage.editing">{{ stage.description }}</ng-container>
+            <input *ngIf="stage.editing" type="text" class="tbl-input" [(ngModel)]="stage.description" />
+          </td>
+          <td>
+            <div class="color-cell">
+              <span class="color-swatch" [style.background]="stage.color"></span>
+              <ng-container *ngIf="!stage.editing">{{ stage.color }}</ng-container>
+              <input *ngIf="stage.editing" type="color" class="color-picker" [(ngModel)]="stage.color" />
+            </div>
+          </td>
+          <td>
+            <ng-container *ngIf="!stage.editing">{{ stage.mandatoryAction }}</ng-container>
+            <select *ngIf="stage.editing" class="tbl-select" [(ngModel)]="stage.mandatoryAction">
+              <option *ngFor="let o of mandatoryActionOptions; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+            </select>
+          </td>
+          <td class="col-sla">
+            <input type="number" class="sla-input" [(ngModel)]="stage.sla" min="0" [disabled]="!stage.editing" />
+          </td>
+          <td class="col-notif">
+            <label class="tgl"><input type="checkbox" [(ngModel)]="stage.notificationsEnabled"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+          </td>
+          <td class="col-status">
+            <span class="stage-badge" [ngClass]="stage.status === 'Active' ? 'badge-active' : 'badge-inactive'">{{ stage.status }}</span>
+          </td>
+          <td class="col-actions">
+            <button class="tbl-icon-btn" title="Edit" (click)="toggleEdit(stage)">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="tbl-icon-btn danger" title="Delete" (click)="deleteStage(stage.id)">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M5 4l.5 9h5L11 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note-card">
+    <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" fill="#3b82f6" fill-opacity="0.12"/><path d="M10 9v5" stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="6.5" r="1" fill="#3b82f6"/></svg>
+    <div>
+      <strong>Note:</strong>
+      <ul>
+        <li>SLA (Days) indicates the recommended time to complete the stage.</li>
+        <li>Notifications will be sent based on the SLA and stage transitions.</li>
+        <li>Inactive stages will not be available for candidate movement.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>

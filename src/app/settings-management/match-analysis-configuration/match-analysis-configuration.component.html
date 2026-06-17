@@ -1,0 +1,220 @@
+<div class="sett-shell">
+
+  <div class="sett-header">
+    <div>
+      <h1 class="sett-title">Match Analysis Configuration</h1>
+      <p class="sett-sub">Define matching parameters, weightage and scoring rules used to evaluate candidate fitment.</p>
+    </div>
+    <div class="sett-header-actions">
+      <button class="btn-save">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Create New Configuration
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="ma-filter-bar">
+    <div class="ma-filter-group">
+      <label>Job Family</label>
+      <select class="fi" [(ngModel)]="maJobFamily">
+        <option *ngFor="let o of maJobFamilyOpts; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+      </select>
+    </div>
+    <div class="ma-filter-group">
+      <label>Department</label>
+      <select class="fi" [(ngModel)]="maDepartment">
+        <option *ngFor="let o of maDeptOpts; trackBy: trackByIndex" [value]="o">{{ o }}</option>
+      </select>
+    </div>
+    <div class="ma-filter-group ma-config-name">
+      <label>Configuration Name</label>
+      <div class="ma-config-row">
+        <input type="text" class="fi" [(ngModel)]="maConfigName" />
+        <span class="stage-badge badge-active">Active</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three-column layout -->
+  <div class="ma-body">
+
+    <!-- Left: Matching Parameters -->
+    <div class="ma-card ma-params">
+      <div class="ma-card-head">
+        <h3>Matching Parameters</h3>
+        <span class="tip" data-tip="Configure parameters used to score candidate fitment.">ⓘ</span>
+      </div>
+      <table class="ma-table">
+        <thead>
+          <tr>
+            <th class="col-drag"></th>
+            <th>#</th>
+            <th>Parameter</th>
+            <th>Description</th>
+            <th>Weightage (%)</th>
+            <th>Mandatory</th>
+            <th>Active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of maParameters; trackBy: trackById">
+            <td class="col-drag"><svg viewBox="0 0 16 16" fill="none"><path d="M4 5h8M4 8h8M4 11h8" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/></svg></td>
+            <td class="ma-seq">{{ p.id }}</td>
+            <td>
+              <div class="ma-param-name">
+                <span class="ma-dot" [style.background]="p.color"></span>
+                {{ p.name }}
+              </div>
+            </td>
+            <td class="ma-desc">{{ p.description }}</td>
+            <td><input type="number" class="sla-input" [(ngModel)]="p.weightage" min="0" max="100" /></td>
+            <td class="text-center">
+              <label class="tgl"><input type="checkbox" [(ngModel)]="p.mandatory"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+            </td>
+            <td class="text-center">
+              <label class="tgl"><input type="checkbox" [(ngModel)]="p.active"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+            </td>
+            <td class="col-actions">
+              <button class="tbl-icon-btn danger" (click)="deleteMaParameter(p.id)">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M5 4l.5 9h5L11 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="ma-total-row">
+        <span>Total Weightage</span>
+        <span class="ma-total-val" [class.over]="maTotalWeightage !== 100">{{ maTotalWeightage }}%</span>
+      </div>
+      <button class="btn-add-stage" style="margin-top:12px" (click)="addMaParameter()">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Add Parameter
+      </button>
+      <div class="note-card" style="margin-top:14px">
+        <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" fill="#3b82f6" fill-opacity="0.12"/><path d="M10 9v5" stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="6.5" r="1" fill="#3b82f6"/></svg>
+        <div><strong>Note:</strong> <span style="font-size:12px;color:#1e40af">Total weightage must be equal to 100%</span></div>
+      </div>
+    </div>
+
+    <!-- Middle: Matching Rules -->
+    <div class="ma-card ma-rules">
+      <div class="ma-card-head">
+        <h3>Matching Rules</h3>
+        <span class="tip" data-tip="Define thresholds and auto-action rules.">ⓘ</span>
+      </div>
+
+      <div class="ma-rule-block">
+        <label>Minimum Match Score for Shortlisting<span class="tip" data-tip="Candidates below this score won't be shortlisted.">ⓘ</span></label>
+        <div class="ma-pct-input">
+          <input type="number" class="fi" [(ngModel)]="maMinScore" min="0" max="100" />
+          <span class="pct-sign">%</span>
+        </div>
+      </div>
+
+      <div class="ma-rule-block">
+        <div class="ma-rule-row">
+          <div>
+            <div class="ma-rule-title">Auto Shortlist Candidates<span class="tip" data-tip="Automatically move candidates above threshold to Shortlisted stage.">ⓘ</span></div>
+            <p class="ma-rule-desc">Move candidates to Shortlisted stage automatically if score is above threshold.</p>
+          </div>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="maAutoShortlist"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+      </div>
+
+      <div class="ma-rule-block">
+        <label>Auto Reject Below<span class="tip" data-tip="Candidates scoring below this are auto-rejected.">ⓘ</span></label>
+        <div class="ma-pct-input">
+          <input type="number" class="fi" [(ngModel)]="maAutoRejectBelow" min="0" max="100" />
+          <span class="pct-sign">%</span>
+        </div>
+      </div>
+
+      <div class="ma-rule-block">
+        <div class="ma-rule-row">
+          <div>
+            <div class="ma-rule-title">Auto Reject Candidates<span class="tip" data-tip="Automatically move candidates below threshold to Rejected stage.">ⓘ</span></div>
+            <p class="ma-rule-desc">Move candidates to Rejected stage automatically if score is below threshold.</p>
+          </div>
+          <label class="tgl"><input type="checkbox" [(ngModel)]="maAutoReject"/><span class="tgl-track"><span class="tgl-thumb"></span></span></label>
+        </div>
+      </div>
+
+      <div class="ma-rule-block" style="border:none">
+        <label>Score Calculation Method</label>
+        <div class="ma-radio-group">
+          <label class="ma-radio">
+            <input type="radio" name="maMethod" value="weighted" [(ngModel)]="maScoreMethod" />
+            <span>Weighted Percentage</span>
+          </label>
+          <label class="ma-radio">
+            <input type="radio" name="maMethod" value="custom" [(ngModel)]="maScoreMethod" />
+            <span>Custom Formula</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Score Preview -->
+    <div class="ma-card ma-preview">
+      <div class="ma-card-head">
+        <h3>Score Calculation Preview</h3>
+        <span class="tip" data-tip="Live preview of how the scoring formula evaluates a sample candidate.">ⓘ</span>
+      </div>
+
+      <div class="ma-candidate">
+        <div class="ma-avatar">AC</div>
+        <div>
+          <div class="ma-cand-label">Candidate Name</div>
+          <div class="ma-cand-name">Arjun Choudhary</div>
+          <div class="ma-cand-role">Software Engineer</div>
+        </div>
+      </div>
+
+      <div class="ma-scores-head">
+        <span>Parameter</span><span>Match Score</span>
+      </div>
+      <div class="ma-score-rows">
+        <div class="ma-score-row" *ngFor="let s of maPreviewScores; let i = index; trackBy: trackByIndex">
+          <span class="ma-score-param">{{ s.param }}</span>
+          <div class="ma-bar-wrap">
+            <div class="ma-bar" [style.width.%]="s.score" [style.background]="s.score >= 80 ? '#22c55e' : s.score >= 60 ? '#f59e0b' : '#ef4444'"></div>
+          </div>
+          <span class="ma-score-pct">{{ s.score }}%</span>
+        </div>
+      </div>
+
+      <div class="ma-final-wrap">
+        <div class="ma-final-label">Final Match Score</div>
+        <div class="ma-donut-wrap">
+          <svg class="ma-donut" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="44" fill="none" stroke="#e5e7eb" stroke-width="10"/>
+            <circle cx="50" cy="50" r="44" fill="none" [attr.stroke]="maScoreColor"
+                    stroke-width="10" stroke-linecap="round"
+                    [attr.stroke-dasharray]="maCircleDash"
+                    stroke-dashoffset="0"
+                    transform="rotate(-90 50 50)"/>
+          </svg>
+          <div class="ma-donut-text">
+            <span class="ma-donut-score" [style.color]="maScoreColor">{{ maFinalScore }}%</span>
+          </div>
+        </div>
+        <div class="ma-fit-label" [style.color]="maScoreColor">{{ maScoreLabel }}</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="ma-footer">
+    <div class="ma-footer-meta">
+      <span>Last Updated By: Admin User</span>
+      <span>Last Updated On: 10-Jun-2024 04:30 PM</span>
+    </div>
+    <div class="sett-header-actions">
+      <button class="btn-reset">Reset</button>
+      <button class="btn-save">Save Configuration</button>
+    </div>
+  </div>
+
+</div>
